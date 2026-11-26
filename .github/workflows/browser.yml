@@ -5,6 +5,7 @@ on:
     paths:
       - "polysearch/static/**"
       - "polysearch/api.py"
+      - "polysearch/pilot.py"
       - "pyproject.toml"
       - "tests/browser/**"
       - ".github/workflows/browser.yml"

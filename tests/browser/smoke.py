@@ -79,6 +79,67 @@ with sync_playwright() as p:
     expect(page.locator("#chart svg")).to_be_visible()
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     page.screenshot(path=str(OUT / "mobile.png"), full_page=True)
+
+    # Pilot interface: isolated synthetic test fixture (never a real chemical experiment).
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    page.get_by_role("link", name="Пилотные кампании").click()
+    expect(page.locator("#create-button")).to_be_enabled()
+    form = page.locator("#create-form")
+    for name, value in {
+        "name":"Browser fixture", "actor":"Researcher", "objective":"Test target",
+        "baseline_method":"Manual baseline fixture", "measurement_protocol":"Synthetic software fixture only",
+        "safety_review":"No physical work", "cost_policy":"All attempts",
+        "budget_per_arm":"3", "confirmations_required":"1"
+    }.items():
+        form.locator("[name='"+name+"']").fill(value)
+    form.get_by_role("button", name="Создать черновик").click()
+    expect(page.locator("#campaign-status")).to_have_text("Черновик")
+    action = page.locator("#campaign-action")
+    action.locator("[name=actor]").fill("Reviewer")
+    action.locator("[name=note]").fill("Fixture protocol approved")
+    action.get_by_role("button", name="Согласовать протокол").click()
+    expect(page.locator("#campaign-status")).to_have_text("Активна")
+
+    proposal = page.locator("#propose-form")
+    proposal.locator("[name=actor]").fill("Researcher")
+    proposal.locator("[name=rationale]").fill("Fixture baseline")
+    proposal.locator("[name=arm]").select_option("baseline")
+    proposal.locator("[name='factor:x']").fill("0.5")
+    proposal.get_by_role("button", name="Сформировать план").click()
+    plan = page.locator("#plan-detail")
+    expect(plan.get_by_role("button", name="Согласовать", exact=True)).to_be_visible()
+    plan.locator("form [name=actor]").fill("Reviewer")
+    plan.locator("form [name=note]").fill("Fixture reviewed")
+    plan.get_by_role("button", name="Согласовать", exact=True).click()
+    expect(plan.get_by_role("button", name="Записать измерение")).to_be_visible()
+    measurement = plan.locator("form").first
+    for name, value in {"actor":"Researcher","run_id":"fixture-1","evidence":"synthetic fixture",
+                        "outcome:y":"0.9","cost_minor":"15000","elapsed_minutes":"30"}.items():
+        measurement.locator("[name='"+name+"']").fill(value)
+    measurement.get_by_role("button", name="Записать измерение").click()
+    expect(page.locator("#plans tbody tr")).to_have_count(1)
+    expect(page.locator("#plans tbody tr")).to_contain_text("Завершён")
+    expect(page.locator("#arm-stats")).to_contain_text("150 RUB")
+
+    proposal.locator("[name=arm]").select_option("polysearch")
+    proposal.locator("[name=rationale]").fill("Fixture next suggestion")
+    proposal.get_by_role("button", name="Сформировать план").click()
+    expect(plan.get_by_role("button", name="Проверить воспроизводимость")).to_be_visible()
+    plan.get_by_role("button", name="Проверить воспроизводимость").click()
+    expect(page.locator("#pilot-message")).to_contain_text("повтор: совпал")
+    plan.locator("form [name=actor]").fill("Reviewer")
+    plan.locator("form [name=note]").fill("Fixture rejection")
+    plan.get_by_role("button", name="Отклонить").click()
+    expect(page.locator("#plans tbody tr").first).to_contain_text("Отклонён")
+    action.locator("[name=actor]").fill("Reviewer")
+    action.locator("[name=note]").fill("Fixture closed")
+    action.get_by_role("button", name="Закрыть кампанию").click()
+    expect(page.locator("#campaign-status")).to_have_text("Закрыта")
+    page.reload()
+    expect(page.locator("#campaign-status")).to_have_text("Закрыта")
+    expect(page.locator("#plans tbody tr")).to_have_count(2)
+    page.screenshot(path=str(OUT / "pilot.png"), full_page=True)
+    print("Pilot browser smoke passed: create, activate, baseline, approval, measurement, cost, ML proposal, replay, reject, close, persistence.")
     assert not errors, json.dumps(errors, ensure_ascii=False)
     print("Browser smoke passed: demo, recommendation, simulation, real config, CSV, bound result, persistence, quality and mobile.")
     browser.close()

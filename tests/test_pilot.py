@@ -162,3 +162,45 @@ def test_cancel_and_unique_run_id(tmp_path):
             "expected_revision":c["revision"],"actor":"x","run_id":"r1","actual_parameters":p["parameters"],
             "outcomes":{"y":.9},"status":"completed","evidence":"fixture","cost_minor":1,"elapsed_minutes":1},409)
         assert cl.get(path+"/report").json()["arms"]["baseline"]["attempts"]==1
+
+def test_both_arms_confirmed_comparison(tmp_path):
+    with TestClient(create_app(tmp_path / "p.db")) as cl:
+        c,path=create(cl, confirmations_required=1)
+        c=activate(cl,path,c)
+        c=measure(cl,path,approve(cl,path,plan(cl,path,c,"baseline",parameters={"x":.5})),
+                  cost_minor=15000,elapsed_minutes=60)
+        c=measure(cl,path,approve(cl,path,plan(cl,path,c,"polysearch")),
+                  cost_minor=10000,elapsed_minutes=40)
+        r=cl.get(path+"/report").json()
+        compare=r["comparison_to_confirmed_goal"]
+        assert compare["attempts_difference_baseline_minus_polysearch"]==0
+        assert compare["cost_minor_difference_baseline_minus_polysearch"]==5000
+        assert compare["elapsed_minutes_difference_baseline_minus_polysearch"]==20
+        assert abs(compare["cost_reduction_fraction"]-1/3)<1e-12
+
+
+def test_workspace_history_opt_in_and_gp_replay(tmp_path):
+    with TestClient(create_app(tmp_path / "p.db")) as cl:
+        post(cl,"/api/config",{"config":CFG})
+        for x,y in ((.1,.2),(.4,.5),(.7,.7)):
+            post(cl,"/api/results",{"parameters":{"x":x},"outcomes":{"y":y}})
+        post(cl,"/api/pilot/campaigns",{**PROTOCOL,"include_workspace_history":True},422)
+        c=post(cl,"/api/pilot/campaigns",{**PROTOCOL,"include_workspace_history":True,
+               "history_provenance":"Synthetic fixture, explicit common history"},201)
+        path="/api/pilot/campaigns/"+c["id"]
+        c=activate(cl,path,c)
+        c=plan(cl,path,c,"polysearch")
+        p=c["plans"][-1]
+        assert p["method"]=="independent_gp"
+        assert len(p["snapshot"]["history"])==3
+        assert p["candidate"]["prediction"] is not None
+        assert cl.get(path+"/plans/"+p["id"]+"/replay").json()["reproduced"]
+
+
+def test_audit_chain_detects_mutation(tmp_path):
+    with TestClient(create_app(tmp_path / "p.db")) as cl:
+        c,path=create(cl)
+        c=activate(cl,path,c)
+        assert verify_events(c["events"])
+        c["events"][0]["actor"]="changed"
+        assert not verify_events(c["events"])
