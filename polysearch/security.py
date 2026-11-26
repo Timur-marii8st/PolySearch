@@ -131,6 +131,8 @@ class Login(StrictModel):
 def authorized(role, method, path):
     # Explicit allowlists; unknown mutations fail closed.
     if method in ("GET", "HEAD"):
+        if path == "/exchange" or path == "/api/exchange/inbox" or re.fullmatch(r"/api/exchange/inbox/[^/]+", path) or re.fullmatch(r"/api/exchange/campaigns/[^/]+/orders/[^/]+", path):
+            return role in ("admin", "researcher", "reviewer")
         if path == "/metrics":
             return role == "admin"
         if path in ("/", "/pilot", "/docs", "/openapi.json", "/redoc", "/api/auth/me", "/api/state", "/api/export.json", "/api/pilot/campaigns"):
@@ -140,6 +142,10 @@ def authorized(role, method, path):
         return False
     if method != "POST":
         return False
+    if path == "/api/exchange/inbox":
+        return role in ("admin", "researcher")
+    if re.fullmatch(r"/api/exchange/inbox/[^/]+/review", path):
+        return role in ("admin", "reviewer")
     if path == "/api/auth/logout":
         return True
     if path in ("/api/config", "/api/demo"):
@@ -209,7 +215,7 @@ def install_security(app, db, enabled):
             if path != "/api/auth/login":
                 user = await run_in_threadpool(accounts.identify, request.cookies.get(COOKIE))
                 if not user:
-                    if method == "GET" and path in ("/", "/pilot", "/docs", "/redoc"):
+                    if method == "GET" and path in ("/", "/pilot", "/exchange", "/docs", "/redoc"):
                         return RedirectResponse("/login", status_code=303)
                     return JSONResponse({"detail": "Authentication required"}, status_code=401)
                 if not authorized(user["role"], method, path):
@@ -226,7 +232,7 @@ def install_security(app, db, enabled):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
-        if path in ("/", "/pilot", "/login"):
+        if path in ("/", "/pilot", "/exchange", "/login"):
             response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
         if enabled and method == "POST":
             # No credentials, request bodies, tokens or experimental values.

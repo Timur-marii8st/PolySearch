@@ -224,6 +224,36 @@ def report(c):
                               "A missing confirmation is not assigned an invented cost or saving."}
 
 
+def validate_measurement(c, p, request):
+    if p["state"] != "approved":
+        conflict("Only an approved plan can receive a measurement")
+    if any(q.get("measurement") and q["measurement"]["run_id"] == request.run_id for q in c["plans"]):
+        conflict("Run ID already recorded in this campaign")
+    if request.status == "failed" and not request.failure_reason:
+        raise HTTPException(422, "Document the failure reason")
+    cfg = ProjectConfig.model_validate(c["config"])
+    # Validate outcomes against the planned configuration. Preserve actual
+    # out-of-range parameters as evidence of deviations rather than hiding them.
+    checked(cfg, p["parameters"], request.outcomes, request.status)
+    if set(request.actual_parameters) != {f.name for f in cfg.factors}:
+        raise HTTPException(422, "Actual parameter names must match the configuration")
+    deviation = request.actual_parameters != p["parameters"] or bool(request.deviation_note)
+    if deviation and not request.deviation_note:
+        raise HTTPException(422, "Document the deviation from the approved parameters")
+
+
+def record_measurement(c, p, request, provenance=None):
+    validate_measurement(c, p, request)
+    deviation = request.actual_parameters != p["parameters"] or bool(request.deviation_note)
+    m = request.model_dump(mode="json", exclude={"expected_revision"})
+    m.update(at=now(), protocol_deviation=deviation)
+    if provenance is not None:
+        m["integration"] = provenance
+    p["measurement"] = m
+    p["state"] = request.status
+    append_event(c, "measurement_recorded", request.actor, plan_id=p["id"], measurement_sha256=fingerprint(m))
+
+
 def pilot_router(workspace):
     router = APIRouter(prefix="/api/pilot", tags=["pilot"])
     store = CampaignStore(workspace.db)
@@ -370,26 +400,7 @@ def pilot_router(workspace):
         with store.lock:
             c = mutable(cid, request)
             p = plan_by_id(c, pid)
-            if p["state"] != "approved":
-                conflict("Only an approved plan can receive a measurement")
-            if any(q.get("measurement") and q["measurement"]["run_id"] == request.run_id for q in c["plans"]):
-                conflict("Run ID already recorded in this campaign")
-            if request.status == "failed" and not request.failure_reason:
-                raise HTTPException(422, "Document the failure reason")
-            cfg = ProjectConfig.model_validate(c["config"])
-            # Validate outcomes against the planned configuration. Preserve actual
-            # out-of-range parameters as evidence of deviations rather than hiding them.
-            checked(cfg, p["parameters"], request.outcomes, request.status)
-            if set(request.actual_parameters) != {f.name for f in cfg.factors}:
-                raise HTTPException(422, "Actual parameter names must match the configuration")
-            deviation = request.actual_parameters != p["parameters"] or bool(request.deviation_note)
-            if deviation and not request.deviation_note:
-                raise HTTPException(422, "Document the deviation from the approved parameters")
-            m = request.model_dump(mode="json", exclude={"expected_revision"})
-            m.update(at=now(), protocol_deviation=deviation)
-            p["measurement"] = m
-            p["state"] = request.status
-            append_event(c, "measurement_recorded", request.actor, plan_id=pid, measurement_sha256=fingerprint(m))
+            record_measurement(c, p, request)
             store.save(c)
             return c
 

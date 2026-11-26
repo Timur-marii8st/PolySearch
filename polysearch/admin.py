@@ -18,16 +18,22 @@ def migrate(source, destination):
         state = db.execute("SELECT id,payload FROM state").fetchall()
         exists = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='pilot_campaigns'").fetchone()
         campaigns = db.execute("SELECT id,payload FROM pilot_campaigns").fetchall() if exists else []
+        exists = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='integration_inbox'").fetchone()
+        inbox = db.execute("SELECT id,source_system,external_id,payload FROM integration_inbox").fetchall() if exists else []
     for _, payload in state + campaigns:
         json.loads(payload)
+    for _, _, _, payload in inbox:
+        json.loads(payload)
     with destination.db.transaction() as db:
-        if db.execute("SELECT 1 FROM state LIMIT 1").fetchone() or db.execute("SELECT 1 FROM pilot_campaigns LIMIT 1").fetchone():
+        if db.execute("SELECT 1 FROM state LIMIT 1").fetchone() or db.execute("SELECT 1 FROM pilot_campaigns LIMIT 1").fetchone() or db.execute("SELECT 1 FROM integration_inbox LIMIT 1").fetchone():
             raise ValueError("Destination contains data; refusing to overwrite")
         for id, payload in state:
             db.execute("INSERT INTO state VALUES (?, ?)", (id, payload))
         for id, payload in campaigns:
             db.execute("INSERT INTO pilot_campaigns VALUES (?, ?)", (id, payload))
-    return {"workspace_rows": len(state), "campaigns": len(campaigns)}
+        for row in inbox:
+            db.execute("INSERT INTO integration_inbox VALUES (?,?,?,?)", row)
+    return {"workspace_rows": len(state), "campaigns": len(campaigns), "inbox_items": len(inbox)}
 
 
 def main():
