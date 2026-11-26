@@ -27,3 +27,20 @@ Python/PEP 440: 1.0.0b1. Версия предназначена для демо
 ## Первый прогон и исправления безопасности
 
 Первоначальная сборка (коммит `2ddca5b`) прошла packaging, browser, Python и PostgreSQL-тесты; нагрузочный smoke сохранил все 40 записей. [Первичный аудит](https://github.com/Timur-marii8st/PolySearch/actions/runs/45896755996) выявил пять advisory в Starlette 0.50.0 (PYSEC-2026-161, PYSEC-2026-249, PYSEC-2026-248, PYSEC-2026-2281, PYSEC-2026-2280) и два предупреждения B310 в загрузчике Monash. Повышены версии FastAPI до 0.165.0 и Starlette до 1.10.0; сетевой загрузчик проверяет разрешённые HTTPS-хосты и перенаправления, добавлены тесты отклонения посторонних адресов. Важна повторная проверка аудита, реального скачивания Monash и браузера; отсутствие предупреждений не является гарантией безопасности.
+
+## Контрольная сводка кандидата
+
+На коммите `87cedb0` подтверждены 82 теста на каждой версии Python, отдельное серверное CI, браузерный сценарий и beta checks (pip-audit: No known vulnerabilities found; Bandit: пройден заданный порог). Первоначальная проверка загрузки Monash выявила слишком узкий allowlist; по журналам установлен фактический институциональный хост au-east.erc.monash.edu.au, разрешён только HTTPS и путь /fpfiles/. На коммите `b4f4d45` повторно успешно пройден полный source discovery/ETL. Другие хосты и не-HTTPS отклоняются.
+
+Статус проверок коммита [b4f4d45](https://github.com/Timur-marii8st/PolySearch/commit/b4f4d45866c59f2c41111dd5df136cf0c6cf12b9) на момент фиксации:
+
+- [Python tests](https://github.com/Timur-marii8st/PolySearch/actions/runs/45897240323): in_progress
+- [Server integration](https://github.com/Timur-marii8st/PolySearch/actions/runs/45897240365): in_progress
+- [Beta release checks](https://github.com/Timur-marii8st/PolySearch/actions/runs/45897240305): in_progress
+- [Monash ML benchmark](https://github.com/Timur-marii8st/PolySearch/actions/runs/45897240306): in_progress
+- [Monash archive BO](https://github.com/Timur-marii8st/PolySearch/actions/runs/45897240307): success
+- [Monash source discovery](https://github.com/Timur-marii8st/PolySearch/actions/runs/45897240341): success
+
+Предыдущий нагрузочный smoke: 80 чтений, 40 записей, 8 клиентов; 151.32 и 135.0 запросов/с соответственно; p95 66.31 и 68.71 мс; GP 38.93 мс; 40/40 уникальных записей. Это синтетический краткий сценарий, а не производственный SLA. [Отчёт](https://github.com/Timur-marii8st/PolySearch/actions/runs/45896755996/artifacts/15153976838).
+
+До утверждения релиза все обязательные проверки должны пройти на финальном коде. Не публиковать промышленный релиз до внешней приёмки и решения правообладателей.
