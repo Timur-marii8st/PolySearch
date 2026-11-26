@@ -1,0 +1,42 @@
+name: Monash archive BO
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/bo/**"
+      - "polysearch/data/**"
+      - "polysearch/ml/benchmark.py"
+      - "data/monash/mapping.mma-v1.json"
+      - ".github/workflows/monash-bo.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: monash-bo-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[ml]"
+      - run: python -m polysearch.data.monash_source --subset mma
+      - run: python -m polysearch.data.monash_etl --mapping data/monash/mapping.mma-v1.json --folds 5
+      - run: python -m polysearch.bo.replay
+      - uses: actions/upload-artifact@v4
+        with:
+          name: monash-bo-replay
+          path: |
+            artifacts/monash-bo/report.json
+            artifacts/monash-bo/traces.csv
+            data/processed/monash-v1/quality.json
+          retention-days: 30
