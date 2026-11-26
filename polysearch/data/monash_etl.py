@@ -17,7 +17,7 @@ from .monash_source import DOI, digest
 
 FIELDS = ["experiment_id", "split_group", "fold", "monomer", "temperature_c",
           "ct_cm", "residence_min", "conversion_fraction", "source_file",
-          "source_row", "source_sha256"]
+          "source_row", "source_sha256", "timesweep"]
 
 
 def finite(value):
@@ -52,6 +52,11 @@ def validate_mapping(mapping, inventory, root):
     if not sources:
         raise ValueError("No reviewed source mappings supplied")
     known = {entry["path"]: entry["sha256"] for entry in inventory["files"]}
+    if mapping.get("summary_path"):
+        name = mapping["summary_path"]
+        sha = mapping.get("summary_sha256")
+        if not sha or known.get(name) != sha or digest(source_path(root, name)) != sha:
+            raise ValueError("Condition workbook checksum mismatch")
     conditions = {}
     for source in sources:
         name = source["path"]
@@ -74,8 +79,10 @@ def validate_mapping(mapping, inventory, root):
             raise ValueError("Unsupported delimiter")
         if source.get("header_row", 1) < 1:
             raise ValueError("header_row must be >= 1")
-        if source.get("measurement_status") != "reviewed" or not source.get("selection_evidence"):
+        if source.get("measurement_status") not in {"reviewed", "provisional"} or not source.get("selection_evidence"):
             raise ValueError("Review valid timesweeps before preparing measurements")
+        if source.get("measurement_status") == "provisional" and (not source.get("status_column") or not source.get("accepted_status") or not source.get("timesweep_column")):
+            raise ValueError("Provisional sources require explicit platform status and timesweep fields")
         exclusions = source.get("exclude_rows", [])
         for item in exclusions:
             if not (1 <= int(item["start"]) <= int(item["end"])) or not item.get("reason"):
@@ -103,7 +110,9 @@ def prepare(root, mapping, folds=5, seed=42):
                 next(stream, None)
             reader = csv.DictReader(stream, delimiter=source["delimiter"], strict=True)
             names = reader.fieldnames or []
-            if len(names) != len(set(names)) or not {source["residence_column"], source["conversion_column"]} <= set(names):
+            mapped = {source["residence_column"], source["conversion_column"]}
+            mapped.update(source[k] for k in ("status_column", "timesweep_column") if source.get(k))
+            if len(names) != len(set(names)) or not mapped <= set(names):
                 raise ValueError(f"Mapped columns missing or ambiguous: {source['path']}: {names}")
             if source["residence_column"] == source["conversion_column"]:
                 raise ValueError("Residence and conversion columns cannot coincide")
@@ -118,6 +127,8 @@ def prepare(root, mapping, folds=5, seed=42):
                 reason = next((e["reason"] for e in exclusions if int(e["start"]) <= line <= int(e["end"])), None)
                 if reason:
                     reason = "reviewed_exclusion: " + str(reason)
+                elif source.get("status_column") and str(raw.get(source["status_column"], "")).strip() not in source["accepted_status"]:
+                    reason = "outside_timesweep: " + str(raw.get(source["status_column"], ""))
                 else:
                     try:
                         if None in raw or any(v is None for v in raw.values()):
@@ -143,7 +154,8 @@ def prepare(root, mapping, folds=5, seed=42):
                              "monomer": "MMA", "temperature_c": temp, "ct_cm": ratio,
                              "residence_min": residence, "conversion_fraction": conversion,
                              "source_file": source["path"], "source_row": line,
-                             "source_sha256": source["sha256"]})
+                             "source_sha256": source["sha256"],
+                             "timesweep": raw.get(source.get("timesweep_column", ""), "")})
                 counts["accepted"] += 1
     if not rows:
         raise ValueError("No accepted measurements")
@@ -159,7 +171,36 @@ def prepare(root, mapping, folds=5, seed=42):
     by_experiment = defaultdict(list)
     for row in rows:
         by_experiment[row["experiment_id"]].append(row)
+    sweep_diagnostics = {}
+    for experiment, values in sorted(by_experiment.items()):
+        sweeps = defaultdict(list)
+        for row in values:
+            if row["timesweep"]:
+                sweeps[row["timesweep"]].append(row)
+        summaries = []
+        for label, sweep in sweeps.items():
+            ordered = sorted(sweep, key=lambda r: r["residence_min"])
+            first, last = ordered[0], ordered[-1]
+            summaries.append({"timesweep": label, "n": len(sweep), "t_min": first["residence_min"],
+                              "t_max": last["residence_min"], "conversion_min": min(r["conversion_fraction"] for r in sweep),
+                              "conversion_max": max(r["conversion_fraction"] for r in sweep)})
+        flags = []
+        labels = list(sweeps)
+        for a, b in zip(labels, labels[1:]):
+            # Compare nearest available pair only if their residence times are close.
+            pairs = [(abs(x["residence_min"] - y["residence_min"]), x, y) for x in sweeps[a] for y in sweeps[b]]
+            gap, left, right = min(pairs, key=lambda p: p[0])
+            jump = abs(left["conversion_fraction"] - right["conversion_fraction"])
+            if gap > 0.25:
+                flags.append({"between": [a,b], "flag": "no_comparable_boundary", "time_gap_min": gap})
+            elif jump > 0.05:
+                flags.append({"between": [a,b], "flag": "possible_jump", "time_gap_min": gap, "conversion_gap": jump})
+        sweep_diagnostics[experiment] = {"sweeps": summaries, "flags": flags}
     report = {
+        "quality_status": "provisional" if any(s["measurement_status"] == "provisional" for s in sources) else "reviewed",
+        "missing_sources": mapping.get("missing_sources", []),
+        "timesweep_diagnostics": sweep_diagnostics,
+        "exclusion_reasons": dict(Counter(r["reason"].split(":")[0] for r in rejected)),
         "doi": DOI, "monomer": "MMA", "task": "predict conversion fraction from residence time and reaction conditions",
         "counts": dict(counts), "independent_experiments": len(by_experiment),
         "condition_groups": len(groups), "folds": folds, "seed": seed,

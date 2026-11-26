@@ -16,16 +16,16 @@ python -m polysearch.data.monash_source
 
 Output: pinned file manifest with checksums and raw schema inventory. The release provides multiple monomers, experiment-code summary workbook, CSV measurements and plots. No conversion values, column names or experiment-to-condition mappings are assumed before inspection.
 
-The first prepared subset will use MMA and conversion. The experimental unit is an independent reaction screening (not a row or NMR spectrum). Source rows from a reaction must stay in one fold. Preserve the original file and row provenance.
+The first prepared subset uses MMA and conversion. The experimental unit is an independent reaction screening (not a row or NMR spectrum). Source rows from a reaction must stay in one fold. Preserve the original file and row provenance.
 
 ## Preparation
 
-Review inventory.json and source workbook. Copy mapping.template.json to mapping.reviewed.json only when exact file names, hashes, experiment codes, conditions, units and accepted timesweeps have been checked. Unreviewed mappings are rejected.
+The pinned release inventory was checked: 15 MMA CSV files and Summary_for_folders.xlsx, with 16 rows of reaction metadata. The CSV for 80mma0.04 is absent. mapping.mma-v1.json matches all available MMA CSV headers and hashes and the workbook. It declares provisional automated screening, not expert-reviewed chemistry. The platform's documented Status=Timesweep identifies kinetic rows and tres is in minutes (https://doi.org/10.1039/D2DD00035K, SI Table S14).
 
 ```bash
-python -m polysearch.data.monash_etl --mapping data/monash/mapping.reviewed.json
+python -m polysearch.data.monash_etl --mapping data/monash/mapping.mma-v1.json
 ```
 
 The output is written under data/processed/monash-v1. It is ignored by Git. See [DATA](../../docs/DATA.md). No processed observations should be called real until the acquisition and mapping have actually passed.
 
-GitHub Actions checks pinned release metadata when the loader changes. Run the full `Monash source discovery` workflow manually to download and inspect the archive; subsequent unrelated pushes do not repeat the potentially large download.
+GitHub Actions downloads the focused MMA subset and runs the provisional ETL when source or mapping code changes. Download the resulting artifact from the workflow run. Manual dispatch is also supported; unrelated pushes do not repeat the download.

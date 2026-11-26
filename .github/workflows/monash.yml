@@ -5,6 +5,8 @@ on:
     paths:
       - "polysearch/data/monash_source.py"
       - ".github/workflows/monash.yml"
+      - "polysearch/data/monash_etl.py"
+      - "data/monash/mapping.mma-v1.json"
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,10 +30,14 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install openpyxl==3.1.5
       - run: python -m polysearch.data.monash_source --subset mma
+      - run: python -m polysearch.data.monash_etl --mapping data/monash/mapping.mma-v1.json --folds 5
       - uses: actions/upload-artifact@v4
         with:
-          name: monash-v1-inventory
+          name: monash-v1-mma-provisional
           path: |
             data/raw/monash-v1/manifest.json
             data/raw/monash-v1/inventory.json
+            data/processed/monash-v1/mma_conversion.csv
+            data/processed/monash-v1/rejected.csv
+            data/processed/monash-v1/quality.json
           retention-days: 30
