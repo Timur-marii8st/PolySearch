@@ -1,0 +1,102 @@
+{
+  "benchmark_commit": "0541a80f333265dec659bac603fa012782a10e32",
+  "run_id": 45807187964,
+  "artifact_id": 15109348705,
+  "doi": "10.26180/29208134.v1",
+  "quality_status": "provisional",
+  "rows": 785,
+  "condition_groups": 15,
+  "models": {
+    "ridge": {
+      "mae": 0.0311408935235691,
+      "rmse": 0.037122507554204605,
+      "r2": 0.5608281372397085,
+      "group_macro_mae": 0.03213690352769726,
+      "group_macro_rmse": 0.03797391573852712
+    },
+    "catboost": {
+      "mae": 0.036830308738789765,
+      "rmse": 0.04506076376580279,
+      "r2": 0.35292146108436306,
+      "group_macro_mae": 0.037883543947196036,
+      "group_macro_rmse": 0.045863035344799505
+    },
+    "gp": {
+      "mae": 0.04746751676899033,
+      "rmse": 0.05974307063816277,
+      "r2": -0.13745697943396884,
+      "group_macro_mae": 0.04864207144100447,
+      "group_macro_rmse": 0.06065361647045234
+    },
+    "kinetic": {
+      "mae": 0.03145986262688799,
+      "rmse": 0.03905403734418956,
+      "r2": 0.5139378837730244,
+      "group_macro_mae": 0.032562941059026594,
+      "group_macro_rmse": 0.040028756915303915
+    }
+  },
+  "intervals": {
+    "gp_nominal_90": {
+      "row_coverage": 0.7006369426751592,
+      "group_macro_row_coverage": 0.7102880948824701,
+      "whole_group_coverage": 0.13333333333333333,
+      "mean_width": 0.13752896178754165,
+      "groups": 15
+    },
+    "gp_group_split_conformal_80": {
+      "row_coverage": 0.9286624203821656,
+      "group_macro_row_coverage": 0.929869924752654,
+      "whole_group_coverage": 0.6666666666666666,
+      "mean_width": 0.20022415302201926,
+      "groups": 15
+    },
+    "group_conformal_90": null,
+    "note": "80% group split conformal uses a separate GP with 4 calibration groups per fold. Finite-sample guarantee assumes exchangeable independent groups; these small fixed experimental conditions are not established exchangeable. Observed coverage is empirical; no adaptive-candidate coverage claim."
+  },
+  "sensitivity": {
+    "rows": 698,
+    "condition_groups": 13,
+    "models": {
+      "ridge": {
+        "mae": 0.029325490747137837,
+        "rmse": 0.03486829122642346,
+        "r2": 0.49262847513637864,
+        "group_macro_mae": 0.029909336589612333,
+        "group_macro_rmse": 0.035405195150988576
+      },
+      "catboost": {
+        "mae": 0.031140366784715715,
+        "rmse": 0.03991415455909265,
+        "r2": 0.3351577205058739,
+        "group_macro_mae": 0.03148583339193216,
+        "group_macro_rmse": 0.040034468383142535
+      },
+      "gp": {
+        "mae": 0.047336318663946456,
+        "rmse": 0.0578828563405867,
+        "r2": -0.3981850964854994,
+        "group_macro_mae": 0.048438756959095636,
+        "group_macro_rmse": 0.058588426265114034
+      },
+      "kinetic": {
+        "mae": 0.029655766755252947,
+        "rmse": 0.03643474481842854,
+        "r2": 0.44601727173225536,
+        "group_macro_mae": 0.03027762663802857,
+        "group_macro_rmse": 0.03701749764214499
+      }
+    }
+  },
+  "lowest_oof_macro_mae": "ridge",
+  "table_sha256": "f422958f34ae742ece88017c16bf3ddb9e95e23c150195bddeaa50bceb8e8809",
+  "environment": {
+    "python": "3.12.16",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "catboost": "1.2.8",
+    "threadpoolctl": "3.8.0"
+  },
+  "warnings": 0
+}
