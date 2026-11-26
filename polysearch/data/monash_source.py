@@ -36,14 +36,13 @@ def _checked_url(url):
     host = p.hostname
     direct = host in {"api.figshare.com", "figshare.com", "ndownloader.figshare.com",
                       "monash.figshare.com"}
-    bucket_path = (host in {"s3-eu-west-1.amazonaws.com", "s3.eu-west-1.amazonaws.com",
-                            "s3.amazonaws.com"} and p.path.startswith("/pfigshare-u-files/"))
-    bucket_host = host in {"pfigshare-u-files.s3.amazonaws.com",
-                           "pfigshare-u-files.s3-eu-west-1.amazonaws.com",
-                           "pfigshare-u-files.s3.eu-west-1.amazonaws.com"}
+    # AWS exposes the same Figshare bucket via global and regional S3 hosts.
+    s3 = r"s3(?:(?:[.-]dualstack)?[.-][a-z0-9-]+)?\.amazonaws\.com"
+    bucket_path = bool(re.fullmatch(s3, host or "") and p.path.startswith("/pfigshare-u-files/"))
+    bucket_host = bool(re.fullmatch(r"pfigshare-u-files\." + s3, host or ""))
     if (p.scheme != "https" or p.username is not None or p.password is not None
             or p.port not in (None, 443) or not (direct or bucket_path or bucket_host)):
-        raise ValueError("Download URL is outside the approved Figshare HTTPS endpoints")
+        raise ValueError(f"Download URL is outside the approved Figshare HTTPS endpoints (host={host!r}, scheme={p.scheme!r}, bucket={p.path.split('/')[1:2]!r})")
     return url
 
 

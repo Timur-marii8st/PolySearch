@@ -113,6 +113,10 @@ def test_figshare_https_urls_allowed():
     target = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/55492559/file.csv?X-Amz-Expires=10"
     assert _checked_url(initial) == initial
     assert _checked_url(target) == target
+    regional = "https://s3.ap-southeast-2.amazonaws.com/pfigshare-u-files/55492559/file.csv"
+    virtual = "https://pfigshare-u-files.s3.dualstack.ap-southeast-2.amazonaws.com/55492559/file.csv"
+    assert _checked_url(regional) == regional
+    assert _checked_url(virtual) == virtual
     handler = _FigshareRedirect()
     redirected = handler.redirect_request(Request(initial), None, 302, "Found", {}, target)
     assert redirected.full_url == target
