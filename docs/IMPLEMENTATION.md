@@ -18,7 +18,7 @@ POST /api/demo с {"n_initial":12}; если проект существует, 
 
 ## Реальные данные
 POST /api/config с {"config":{"factors":[{"name":"x","lower":0,"upper":1}],"targets":[{"name":"y","lower":0.8,"scale":0.2}]}}.
-POST /api/import.csv с JSON {"csv":"x,y\\n0.1,0.2\\n0.5,0.7"}. CSV целиком проверяется до сохранения. GET /api/export.json выгружает состояние. POST /api/results принимает фактические измерения.
+POST /api/import.csv с JSON {"csv":"x,y\n0.1,0.2\n0.5,0.7"}. CSV целиком проверяется до сохранения. GET /api/export.json выгружает состояние. POST /api/results принимает фактические измерения.
 
 ## Ограничения
 - GP с Matérn 5/2 и независимыми выходами, MC-EI, maximin cold start, линейные ограничения и разнообразие серии.

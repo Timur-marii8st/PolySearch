@@ -1,4 +1,5 @@
 """Validated numerical experiment contracts."""
+import math
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, model_validator
@@ -88,7 +89,7 @@ def validate_result(config: ProjectConfig, result: ResultInput) -> None:
             raise ValueError(f"Factor outside bounds: {f.name}")
     for c in config.constraints:
         value = sum(w * result.parameters[k] for k, w in c.coefficients.items())
-        if not __import__("math").isfinite(value) or value > c.upper + 1e-9:
+        if not math.isfinite(value) or value > c.upper + 1e-9:
             raise ValueError("Linear constraint violated")
     targets = {t.name for t in config.targets}
     if not set(result.outcomes) <= targets:

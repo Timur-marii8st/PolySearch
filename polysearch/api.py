@@ -185,7 +185,10 @@ def create_app(db_path=None):
             factors = [f.name for f in cfg.factors]
             targets = [t.name for t in cfg.targets]
             reader = csv.DictReader(io.StringIO(payload.csv.lstrip("\ufeff")), strict=True)
-            header = reader.fieldnames or []
+            try:
+                header = reader.fieldnames or []
+            except csv.Error as error:
+                raise HTTPException(422, f"Invalid CSV header: {error}") from error
             required = set(factors + targets)
             if (len(header) != len(set(header)) or not required <= set(header)
                     or set(header) - required - {"status", "role", "note"}):
