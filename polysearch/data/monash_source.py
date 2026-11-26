@@ -61,7 +61,8 @@ def _download(file, destination):
         raise ValueError("File exceeds download budget")
     if destination.exists() and destination.stat().st_size == expected and md5 and digest(destination, "md5") == md5.lower():
         return
-    url = str(file["downloadUrl"])
+    url = str(file.get("download_url") or file.get("downloadUrl")
+              or f"https://api.figshare.com/v2/file/download/{int(file['id'])}")
     if not url.startswith("https://"):
         raise ValueError("Expected HTTPS download URL")
     temp = destination.with_suffix(destination.suffix + ".part")
@@ -132,6 +133,8 @@ def acquire(root):
         target = extracted / str(file_id)
         if zipfile.is_zipfile(path) and path.suffix.lower() not in {".xlsx", ".xlsm"}:
             remaining -= _extract(path, target, remaining)
+            for nested in sorted(target.rglob("*.zip")):
+                remaining -= _extract(nested, nested.parent / (nested.stem + "_unpacked"), remaining)
         else:
             target.mkdir(exist_ok=True)
             shutil.copy2(path, target / name)
@@ -140,7 +143,8 @@ def acquire(root):
 
 
 def _csv_preview(path):
-    sample = path.read_bytes()[:65536]
+    with path.open("rb") as stream:
+        sample = stream.read(65536)
     for encoding in ("utf-8-sig", "cp1252"):
         try:
             text = sample.decode(encoding)
