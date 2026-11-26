@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PolySearch — лабораторный обмен</title><link rel="stylesheet" href="/static/style.css">
+<script src="/static/session.js" defer></script><script src="/static/exchange.js" defer></script></head>
+<body><a class="skip" href="#main">К содержанию</a><div class="shell">
+<aside class="sidebar"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">P</span><span>PolySearch<small>EXPERIMENT WORKSPACE</small></span></a>
+<div class="nav-caption">Рабочее пространство</div><nav aria-label="Разделы"><a href="/">Обзор</a><a href="/pilot">Пилотные кампании</a><a href="/exchange" aria-current="page">Обмен с лабораторией</a></nav></aside>
+<main id="main"><header class="topbar"><div class="crumb">PolySearch / <span>Лабораторный обмен</span></div><a href="/docs">API ↗</a></header>
+<div class="content"><div class="page-heading"><div><div class="eyebrow">LIMS / ELN · JSON V1</div><h1>Обмен с лабораторией</h1><p>Экспорт согласованных заданий и проверка результатов перед включением в кампанию.</p></div><button id="refresh" class="button secondary">Обновить</button></div>
+<div class="notice">Файловый обмен, не прямое управление оборудованием. Проверка хеша не является электронной подписью. Единицы должны совпадать с протоколом; преобразования автоматически не выполняются.</div>
+<div id="error" class="message error" role="alert" hidden></div><div id="message" class="message" role="status" aria-live="polite" hidden></div>
+<article class="panel"><label>Кампания<select id="campaign"></select></label><p id="campaign-info" class="small"></p></article>
+<div class="dashboard"><article class="panel"><h2>1. Согласованное задание</h2><p class="small">Только утверждённые, ещё не выполненные планы активной кампании.</p><label>План<select id="plan"></select></label><button class="button primary" id="download-order">Скачать задание JSON</button></article>
+<article class="panel"><h2>2. Входящие измерения</h2><form id="stage-form"><label>Ответственный<input name="actor" required maxlength="160"></label><label>Файл результата<input type="file" id="result-file" accept=".json,application/json" required></label><pre id="preview" class="exchange-pre">Выберите файл для предварительного просмотра.</pre><button type="submit" id="stage" class="button primary">Отправить на проверку</button></form><p class="small">Файл должен содержать версию схемы, внешний ID, хеш задания, фактические параметры, измерения, валюту, стоимость, время и первичный источник.</p></article></div>
+<article class="panel"><h2>3. Журнал входящих результатов</h2><div class="table-wrap" id="inbox"></div><div class="pagination"><button id="prev" class="button secondary">Назад</button><span id="pagination" class="small"></span><button id="next" class="button secondary">Далее</button></div></article>
+<article class="panel" id="detail"><h2>4. Проверка и решение</h2><p class="small">Выберите запись в журнале.</p></article>
+<footer>PolySearch · версия обмена polysearch.lab.v1 · физические испытания остаются ответственностью лаборатории</footer></div></main></div></body></html>
