@@ -126,6 +126,7 @@ def acquire(root):
         folder = raw / str(file_id)
         folder.mkdir(exist_ok=True)
         path = folder / name
+        print("MONASH_DOWNLOAD " + json.dumps({"id": file_id, "name": name, "size": f['size']}), flush=True)
         _download(f, path)
         manifest["files"].append({"id": file_id, "name": name, "size": path.stat().st_size,
                                   "sha256": digest(path), "md5": digest(path, "md5"),
@@ -200,7 +201,7 @@ def main():
     args = parser.parse_args()
     manifest = acquire(args.root)
     report = inventory(args.root)
-    print("MONASH_MANIFEST " + json.dumps(manifest, ensure_ascii=True))
+    print("MONASH_MANIFEST " + json.dumps(manifest, ensure_ascii=True), flush=True)
     print("MONASH_FILE_COUNT " + str(len(report["files"])))
     csvs = [f for f in report["files"] if f["path"].lower().endswith(".csv")]
     print("MONASH_CSV_COUNT " + str(len(csvs)))

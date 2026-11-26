@@ -27,3 +27,5 @@ python -m polysearch.data.monash_etl --mapping data/monash/mapping.reviewed.json
 ```
 
 The output is written under data/processed/monash-v1. It is ignored by Git. See [DATA](../../docs/DATA.md). No processed observations should be called real until the acquisition and mapping have actually passed.
+
+GitHub Actions checks pinned release metadata when the loader changes. Run the full `Monash source discovery` workflow manually to download and inspect the archive; subsequent unrelated pushes do not repeat the potentially large download.

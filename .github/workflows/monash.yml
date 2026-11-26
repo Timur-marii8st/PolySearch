@@ -3,14 +3,23 @@ on:
   push:
     branches: [main]
     paths:
-      - "polysearch/data/**"
+      - "polysearch/data/monash_source.py"
       - ".github/workflows/monash.yml"
-      - "data/monash/**"
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -c 'from polysearch.data.monash_source import read_metadata; import json; m=read_metadata(); print("MONASH_RELEASE " + json.dumps({k:m.get(k) for k in ("id","version","doi","title","license","authors","files")},ensure_ascii=True))'
   inventory:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
