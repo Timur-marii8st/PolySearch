@@ -29,3 +29,8 @@ dist/
 .idea/
 .vscode/
 .DS_Store
+
+/secrets/
+/backups/
+*.dump
+*.dump.sha256

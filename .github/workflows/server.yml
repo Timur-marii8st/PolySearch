@@ -1,0 +1,77 @@
+name: Server integration
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/**"
+      - "tests/test_security.py"
+      - "tests/test_postgres.py"
+      - "Dockerfile"
+      - "compose.yaml"
+      - "deploy/**"
+      - "pyproject.toml"
+      - ".github/workflows/server.yml"
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: fixture-only-password
+          POSTGRES_DB: polysearch_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d polysearch_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      POLYSEARCH_TEST_POSTGRES_DSN: "postgresql://postgres:fixture-only-password@127.0.0.1:5432/polysearch_test"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev,server]"
+      - run: python -m pytest -q tests/test_postgres.py tests/test_security.py
+  compose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start
+        run: |
+          mkdir -p secrets
+          openssl rand -hex 32 > secrets/db_admin_password.txt
+          openssl rand -hex 32 > secrets/db_app_password.txt
+          chmod 644 secrets/*.txt
+          docker compose up -d --build --wait
+      - name: Authenticated smoke and backup restore
+        run: |
+          password="$(openssl rand -hex 24)"
+          printf '%s\n' "$password" | docker compose exec -T app python -m polysearch.admin user test-admin --role admin --password-stdin
+          python3 - "$password" <<'PY'
+          import json, sys, urllib.request, http.cookiejar
+          jar=http.cookiejar.CookieJar()
+          client=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+          def post(path,data):
+              req=urllib.request.Request("http://127.0.0.1:8000"+path,json.dumps(data).encode(),headers={"Content-Type":"application/json","X-PolySearch-Request":"1"})
+              with client.open(req,timeout=15) as r:
+                  return json.load(r)
+          assert post("/api/auth/login",{"username":"test-admin","password":sys.argv[1]})["ok"]
+          assert post("/api/config",{"config":{"factors":[{"name":"x","lower":0,"upper":1}],"targets":[{"name":"y","lower":0.8,"scale":0.2}]}})["config"]["mode"]=="real"
+          with client.open("http://127.0.0.1:8000/api/state") as r:
+              assert json.load(r)["config"]["mode"]=="real"
+          PY
+          sh deploy/backup.sh backups/ci.dump
+          sh deploy/verify-backup.sh backups/ci.dump
+      - if: always()
+        run: docker compose logs --tail 80; docker compose down -v
