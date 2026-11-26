@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 from scipy.stats import qmc
 
+from .pilot import pilot_router
 from .demo import configuration, evaluate
 from .engine import Space, recommend
 from .models import ProjectConfig, ResultInput, Trial, StrictModel, validate_result
@@ -75,6 +76,12 @@ def create_app(db_path=None):
     def workspace():
         return FileResponse(static / "index.html", media_type="text/html",
                             headers={"Cache-Control": "no-cache"})
+
+    @app.get("/pilot", include_in_schema=False)
+    def pilot_workspace():
+        return FileResponse(static / "pilot.html", media_type="text/html", headers={"Cache-Control": "no-cache"})
+
+    app.include_router(pilot_router(store))
 
     def current():
         state = store.load()
