@@ -1,0 +1,106 @@
+name: Beta release checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/**"
+      - "pyproject.toml"
+      - "tools/**"
+      - "Dockerfile"
+      - "compose.yaml"
+      - "deploy/**"
+      - ".github/workflows/beta.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: python -m twine check dist/*
+      - name: Install wheel outside repository
+        run: |
+          python -m venv "$RUNNER_TEMP/polysearch-wheel"
+          "$RUNNER_TEMP/polysearch-wheel/bin/python" -m pip install "dist/$(basename "$(ls dist/*.whl)")[server]" httpx==0.28.1
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/polysearch-wheel/bin/python" - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from fastapi.testclient import TestClient
+          from polysearch import __version__
+          from polysearch.api import create_app
+          assert __version__ == "1.0.0b1"
+          with tempfile.TemporaryDirectory() as d, TestClient(create_app(Path(d)/"wheel.db"), base_url="http://localhost") as c:
+              for path in ("/","/pilot","/exchange","/login","/static/app.js","/static/pilot.js","/static/exchange.js","/static/login.js","/static/session.js","/static/style.css","/ready"):
+                  assert c.get(path).status_code == 200,path
+              assert c.get("/openapi.json").json()["info"]["version"]=="1.0.0b1"
+          print("WHEEL_SMOKE_OK")
+          PY
+      - run: |
+          "$RUNNER_TEMP/polysearch-wheel/bin/python" -m pip freeze > dist/runtime-dependencies.txt
+          (cd dist && sha256sum *.whl *.tar.gz runtime-dependencies.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: polysearch-1.0.0b1-packages
+          path: dist/
+          retention-days: 30
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ".[server,ml]"
+      - run: |
+          mkdir -p artifacts/audit
+          python -m pip freeze --exclude-editable | grep -v '^polysearch @ ' > artifacts/audit/dependencies.txt
+          python -m venv "$RUNNER_TEMP/audit-tools"
+          "$RUNNER_TEMP/audit-tools/bin/pip" install pip-audit==2.9.0 bandit==1.8.6
+      - name: Dependency advisory audit
+        run: |
+          "$RUNNER_TEMP/audit-tools/bin/pip-audit" --no-deps --disable-pip -r artifacts/audit/dependencies.txt -f json -o artifacts/audit/pip-audit.json
+      - name: Static source audit
+        if: always()
+        run: |
+          "$RUNNER_TEMP/audit-tools/bin/bandit" -r polysearch -ll -ii -f json -o artifacts/audit/bandit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beta-security-audit
+          path: artifacts/audit/
+          retention-days: 30
+  load:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start isolated fixture stack
+        run: |
+          umask 077
+          mkdir -p secrets
+          openssl rand -hex 32 > secrets/db_admin_password.txt
+          openssl rand -hex 32 > secrets/db_app_password.txt
+          chmod 644 secrets/*.txt
+          docker compose up -d --build --wait
+      - name: Concurrent HTTP check
+        run: |
+          export POLYSEARCH_LOAD_FIXTURE_PASSWORD="$(openssl rand -hex 24)"
+          printf '%s\n' "$POLYSEARCH_LOAD_FIXTURE_PASSWORD" | docker compose exec -T app python -m polysearch.admin user load-fixture-admin --role admin --password-stdin
+          python3 tools/load_smoke.py --disposable-fixture --out artifacts/load/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beta-load-report
+          path: artifacts/load/
+          if-no-files-found: ignore
+      - if: always()
+        run: docker compose logs --tail 40; docker compose down -v

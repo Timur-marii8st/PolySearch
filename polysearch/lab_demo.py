@@ -16,7 +16,7 @@ def run(output):
     output=Path(output)
     output.mkdir(parents=True,exist_ok=False)
     with tempfile.TemporaryDirectory(prefix="polysearch-fixture-") as temp:
-        with TestClient(create_app(Path(temp)/"demo.sqlite3")) as client:
+        with TestClient(create_app(Path(temp)/"demo.sqlite3"), base_url="http://localhost") as client:
             def post(path,body,expected=200):
                 response=client.post(path,json=body)
                 assert response.status_code==expected,response.text
