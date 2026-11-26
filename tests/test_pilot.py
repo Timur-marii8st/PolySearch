@@ -204,3 +204,17 @@ def test_audit_chain_detects_mutation(tmp_path):
         assert verify_events(c["events"])
         c["events"][0]["actor"]="changed"
         assert not verify_events(c["events"])
+
+def test_rejected_model_candidate_is_excluded_not_trained(tmp_path):
+    with TestClient(create_app(tmp_path / "p.db")) as cl:
+        c,path=create(cl)
+        c=activate(cl,path,c)
+        c=plan(cl,path,c,"polysearch")
+        rejected=c["plans"][-1]
+        c=change(cl,path,c,"/plans/"+rejected["id"]+"/review",decision="reject",note="Not suitable")
+        c=plan(cl,path,c,"polysearch")
+        new=c["plans"][-1]
+        assert new["parameters"]!=rejected["parameters"]
+        assert new["snapshot"]["history"]==[]
+        assert new["snapshot"]["excluded_parameters"]==[rejected["parameters"]]
+        assert cl.get(path+"/plans/"+new["id"]+"/replay").json()["reproduced"]

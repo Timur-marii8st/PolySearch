@@ -317,11 +317,14 @@ def pilot_router(workspace):
                 if request.parameters is not None:
                     raise HTTPException(422, "PolySearch parameters must come from the model")
                 history = arm_history(c, arm)
+                excluded = [p["parameters"] for p in c["plans"]
+                            if p["arm"] == arm and p["state"] == "rejected"]
                 snapshot = {"runtime": runtime_manifest(), "config": c["config"],
+                            "excluded_parameters": excluded,
                             "history": [t.model_dump(mode="json") for t in history], "search": SEARCH}
                 try:
                     with threadpool_limits(limits=1):
-                        result = recommend(cfg, history, **SEARCH)
+                        result = recommend(cfg, history, excluded_parameters=excluded, **SEARCH)
                 except ValueError as e:
                     raise HTTPException(422, str(e)) from e
                 candidate = result["recommendations"][0]
@@ -458,7 +461,8 @@ def pilot_router(workspace):
                 return {"snapshot_integrity": integrity, "same_runtime": same_runtime, "reproduced": None}
             with threadpool_limits(limits=1):
                 result = recommend(ProjectConfig.model_validate(snapshot["config"]),
-                                   [Trial.model_validate(t) for t in snapshot["history"]], **snapshot["search"])
+                                   [Trial.model_validate(t) for t in snapshot["history"]],
+                                   excluded_parameters=snapshot.get("excluded_parameters", []), **snapshot["search"])
             candidate = result["recommendations"][0]
             expected = p["candidate"]
             # Exact content hash can differ from floating-point variation; report both.

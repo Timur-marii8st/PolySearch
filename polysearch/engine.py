@@ -87,7 +87,7 @@ def calibrate(mean, std, observed, confidence):
 
 
 def recommend(config: ProjectConfig, trials: list[Trial], batch_size=1,
-              pool_size=1536, mc_samples=128):
+              pool_size=1536, mc_samples=128, excluded_parameters=()):
     if not 1 <= batch_size <= 3 or pool_size < 16 or mc_samples < 1:
         raise ValueError("Invalid search budget")
     space = Space(config)
@@ -97,6 +97,10 @@ def recommend(config: ProjectConfig, trials: list[Trial], batch_size=1,
     train = [t for t in trials if t.status == "completed" and t.role == "train"]
     cal = [t for t in trials if t.status == "completed" and t.role == "calibration"]
     seen = [space.encode(t.parameters) for t in trials]
+    # Rejected proposals restrict the search, but are not measurements.
+    for parameters in excluded_parameters:
+        validate_result(config, ResultInput(parameters=parameters, status="failed"))
+        seen.append(space.encode(parameters))
     x = np.array([space.encode(t.parameters) for t in train]).reshape(-1, space.d)
     y = np.array([[t.outcomes[o.name] for o in config.targets] for t in train])
     distinct = len(np.unique(np.round(x, 10), axis=0))
