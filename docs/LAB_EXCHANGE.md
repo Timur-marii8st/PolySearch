@@ -59,3 +59,13 @@ python -m pip install -e ".[dev]"
 POLYSEARCH_AUTH=local python -m polysearch.lab_demo --out artifacts/lab-demo
 ```
 Отдельная временная SQLite и генерируемые значения с явными пометками. Команда не обращается к пользовательской БД, не подключается к LIMS. Выходной каталог должен быть новым; содержит задания, результаты, кампанию и отчёт. Демонстрационный отчёт нельзя использовать как коммерческое доказательство экономии.
+
+## Подтверждённые проверки
+
+Проверен коммит [8ed6ab9](https://github.com/Timur-marii8st/PolySearch/commit/8ed6ab964a8a5b8fb2c023c3000271c24ebca497).
+
+- [Python CI](https://github.com/Timur-marii8st/PolySearch/actions/runs/45895545393): 70 passed, 3 PostgreSQL-only tests skipped, 1 warning на каждой версии Python 3.11/3.12. Программное демо изолированной базы прошло на обеих версиях.
+- [Server integration](https://github.com/Timur-marii8st/PolySearch/actions/runs/45895545230): 21 passed, 1 warning; PostgreSQL, RBAC, обмен и повторная проверка Docker Compose / backup / restore тестовой базы.
+- [Browser smoke](https://github.com/Timur-marii8st/PolySearch/actions/runs/45895545211): основной интерфейс, пилот и авторизованный обмен (HTTP loopback); отдельные исследователь и технолог, скачивание задания, загрузка результата, принятие, проверка сохранения, запрет viewer и выход. [Скриншоты](https://github.com/Timur-marii8st/PolySearch/actions/runs/45895545211/artifacts/15154020369) доступны в пределах срока хранения артефактов.
+
+Все эти испытания — программные, на фикстурах. Не проверены API конкретного LIMS, достоверность измерений заказчика, TLS в его сети, нагрузка и физический эффект.
