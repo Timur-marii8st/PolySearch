@@ -9,6 +9,10 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
     strategy:
       matrix:
         python: ["3.11", "3.12"]
