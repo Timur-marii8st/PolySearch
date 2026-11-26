@@ -90,6 +90,7 @@ class Review(Decision):
 
 
 class Measurement(Mutation):
+    run_id: Actor
     actual_parameters: dict[Name, FiniteFloat]
     outcomes: dict[Name, FiniteFloat] = Field(default_factory=dict)
     status: Literal["completed", "failed"]
@@ -190,7 +191,7 @@ def arm_summary(c, arm):
         cost += m["cost_minor"]
         minutes += m["elapsed_minutes"]
         if completed_goal(config, p):
-            key = fingerprint(m["actual_parameters"])
+            key = tuple(sorted(m["actual_parameters"].items()))
             successes[key] = successes.get(key, 0) + 1
             if first is None and successes[key] >= c["protocol"]["confirmations_required"]:
                 first = {"attempts": i, "cost_minor": cost, "elapsed_minutes": minutes,
@@ -199,6 +200,7 @@ def arm_summary(c, arm):
             "failed": sum(p["state"] == "failed" for p in attempts),
             "deviations": sum(p["measurement"]["protocol_deviation"] for p in attempts),
             "rejected_plans": sum(p["arm"] == arm and p["state"] == "rejected" for p in c["plans"]),
+            "cancelled_plans": sum(p["arm"] == arm and p["state"] == "cancelled" for p in c["plans"]),
             "total_cost_minor": cost, "total_elapsed_minutes": minutes,
             "goal_confirmed": first is not None, "first_confirmed_goal": first}
 
@@ -360,6 +362,8 @@ def pilot_router(workspace):
             p = plan_by_id(c, pid)
             if p["state"] != "approved":
                 conflict("Only an approved plan can receive a measurement")
+            if any(q.get("measurement") and q["measurement"]["run_id"] == request.run_id for q in c["plans"]):
+                conflict("Run ID already recorded in this campaign")
             if request.status == "failed" and not request.failure_reason:
                 raise HTTPException(422, "Document the failure reason")
             cfg = ProjectConfig.model_validate(c["config"])
@@ -376,6 +380,19 @@ def pilot_router(workspace):
             p["measurement"] = m
             p["state"] = request.status
             append_event(c, "measurement_recorded", request.actor, plan_id=pid, measurement_sha256=fingerprint(m))
+            store.save(c)
+            return c
+
+    @router.post("/campaigns/{cid}/plans/{pid}/cancel")
+    def cancel(cid: str, pid: str, request: Decision):
+        with store.lock:
+            c = mutable(cid, request)
+            p = plan_by_id(c, pid)
+            if p["state"] != "approved":
+                conflict("Only an approved, unexecuted plan can be cancelled")
+            p["state"] = "cancelled"
+            p["cancellation"] = {"actor": request.actor, "at": now(), "note": request.note}
+            append_event(c, "plan_cancelled", request.actor, plan_id=pid, note=request.note)
             store.save(c)
             return c
 
@@ -406,7 +423,7 @@ def pilot_router(workspace):
         with store.lock:
             c = store.get(cid)
             out = io.StringIO()
-            fields = ["id", "arm", "status", "approved_parameters", "actual_parameters", "outcomes",
+            fields = ["id", "run_id", "arm", "status", "approved_parameters", "actual_parameters", "outcomes",
                       "cost_minor", "currency", "elapsed_minutes", "protocol_deviation", "evidence", "model_version"]
             writer = csv.DictWriter(out, fieldnames=fields)
             writer.writeheader()
@@ -417,7 +434,7 @@ def pilot_router(workspace):
                 if p["state"] not in DONE:
                     continue
                 m = p["measurement"]
-                writer.writerow({"id": p["id"], "arm": p["arm"], "status": p["state"],
+                writer.writerow({"id": p["id"], "run_id": safe(m["run_id"]), "arm": p["arm"], "status": p["state"],
                                  "approved_parameters": json.dumps(p["parameters"]),
                                  "actual_parameters": json.dumps(m["actual_parameters"]),
                                  "outcomes": json.dumps(m["outcomes"]),

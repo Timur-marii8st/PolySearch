@@ -41,7 +41,7 @@ def approve(client, path, c):
 
 def measure(client, path, c, y=.9, **overrides):
     p = c["plans"][-1]
-    payload = dict(actual_parameters=p["parameters"], outcomes={"y": y}, status="completed",
+    payload = dict(run_id=p["id"], actual_parameters=p["parameters"], outcomes={"y": y}, status="completed",
                    evidence="Test fixture", cost_minor=10000, elapsed_minutes=30)
     payload.update(overrides)
     return change(client, path, c, "/plans/" + p["id"] + "/measurement", **payload)
@@ -72,7 +72,7 @@ def test_protocol_gate_revision_and_approval(tmp_path):
         c = plan(cl, path, c, "baseline", parameters={"x": .5})
         p = c["plans"][-1]
         post(cl, path + "/plans/" + p["id"] + "/measurement", {
-            "expected_revision":c["revision"], "actor":"x","actual_parameters":{"x":.5},
+            "expected_revision":c["revision"], "actor":"x","run_id":"fixture","actual_parameters":{"x":.5},
             "outcomes":{"y":.9},"status":"completed","evidence":"x","cost_minor":1,"elapsed_minutes":1},409)
         post(cl, path + "/plans/" + p["id"] + "/review", {"expected_revision":0,"actor":"x",
                                                          "decision":"approve","note":"x"},409)
@@ -147,3 +147,18 @@ def test_protocol_confirmation_budget(tmp_path):
     with TestClient(create_app(tmp_path / "p.db")) as cl:
         post(cl,"/api/config",{"config":CFG})
         post(cl,"/api/pilot/campaigns",{**PROTOCOL,"budget_per_arm":1},422)
+
+def test_cancel_and_unique_run_id(tmp_path):
+    with TestClient(create_app(tmp_path / "p.db")) as cl:
+        c,path=create(cl)
+        c=activate(cl,path,c)
+        c=approve(cl,path,plan(cl,path,c,"baseline",parameters={"x":.2}))
+        c=change(cl,path,c,"/plans/"+c["plans"][-1]["id"]+"/cancel",note="Never conducted, zero cost")
+        assert cl.get(path+"/report").json()["arms"]["baseline"]["attempts"]==0
+        c=measure(cl,path,approve(cl,path,plan(cl,path,c,"baseline",parameters={"x":.2})),run_id="r1")
+        c=approve(cl,path,plan(cl,path,c,"baseline",repeat_of=c["plans"][-1]["id"]))
+        p=c["plans"][-1]
+        post(cl,path+"/plans/"+p["id"]+"/measurement",{
+            "expected_revision":c["revision"],"actor":"x","run_id":"r1","actual_parameters":p["parameters"],
+            "outcomes":{"y":.9},"status":"completed","evidence":"fixture","cost_minor":1,"elapsed_minutes":1},409)
+        assert cl.get(path+"/report").json()["arms"]["baseline"]["attempts"]==1

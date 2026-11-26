@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PolySearch — пилотные кампании</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/pilot.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">К содержанию</a>
+<div class="shell">
+<aside class="sidebar">
+<a class="brand" href="/"><span class="brand-mark" aria-hidden="true">P</span><span>PolySearch<small>EXPERIMENT WORKSPACE</small></span></a>
+<div class="nav-caption">Рабочее пространство</div>
+<nav aria-label="Разделы"><a href="/#overview">Обзор</a><a href="/#settings">Настройки проекта</a><a href="/pilot" aria-current="page">Пилотные кампании</a></nav>
+<div class="sidebar-bottom"><span class="status-dot"></span><div>Локальный режим<small>Запись имени, не ЭП</small></div></div>
+</aside>
+<main id="main">
+<header class="topbar"><div class="crumb">PolySearch / <span>Пилотные кампании</span></div><a class="link" href="/docs">API ↗</a></header>
+<div class="content">
+<div class="page-heading"><div><div class="eyebrow">ПОДГОТОВКА ПРОМЫШЛЕННОГО ПИЛОТА</div><h1>Экспериментальные кампании</h1><p>Согласованный протокол, независимые ветки сравнения и фактические затраты.</p></div></div>
+<div class="notice">Локальный исследовательский контур. Не управляет оборудованием и не подтверждает безопасность. Имя согласующего не проверяется программой; физические опыты требуют отдельного допуска. Не используйте синтетические записи как реальные.</div>
+<div id="pilot-error" class="message error" role="alert" hidden></div><div id="pilot-message" class="message" role="status" aria-live="polite" hidden></div>
+<article class="panel"><div class="panel-heading"><h2>Кампании</h2><button type="button" id="refresh" class="button secondary">Обновить</button></div><label>Выбрать кампанию<select id="campaign-list"><option value="">—</option></select></label></article>
+<details class="panel" id="create-panel"><summary><strong>Создать кампанию</strong></summary>
+<p id="workspace-info" class="small">Настройте реальный проект в основном интерфейсе. Конфигурация будет скопирована в отдельную кампанию.</p>
+<form id="create-form">
+<div class="form-grid"><label>Название<input name="name" required maxlength="160"></label><label>Ответственный<input name="actor" required maxlength="160"></label><label>Лимит опытов на ветку<input name="budget_per_arm" type="number" min="1" max="100" value="10" required></label><label>Число подтверждений<input name="confirmations_required" type="number" min="1" max="5" value="2" required></label><label>Валюта (ISO 4217)<input name="currency" pattern="[A-Z]{3}" value="RUB" required></label></div>
+<label>Цель и критерий успеха<textarea name="objective" required maxlength="4000" rows="2"></textarea></label>
+<label>Метод сравнения (baseline)<textarea name="baseline_method" required maxlength="4000" rows="2"></textarea></label>
+<label>Протокол измерений, независимость опытов и QC<textarea name="measurement_protocol" required maxlength="4000" rows="2"></textarea></label>
+<label>Основание допуска, ограничения и остановка<textarea name="safety_review" required maxlength="4000" rows="2"></textarea></label>
+<label>Правила учёта затрат и времени<textarea name="cost_policy" required maxlength="4000" rows="2"></textarea></label>
+<label class="checkbox-line"><input name="include_workspace_history" type="checkbox"> Включить общую историю реального проекта</label>
+<label>Происхождение общей истории<textarea name="history_provenance" rows="2" maxlength="4000"></textarea></label>
+<p class="small">Исторические записи не входят в перспективный бюджет. Не включайте коррелированные строки кинетических кривых как независимые опыты.</p>
+<button class="button primary" type="submit" id="create-button">Создать черновик</button>
+</form></details>
+<section id="campaign-workspace" hidden>
+<div class="page-heading"><div><div class="eyebrow" id="campaign-status"></div><h1 id="campaign-name"></h1><p id="campaign-revision"></p></div><div class="actions"><a id="download-json" class="button secondary">Экспорт JSON</a><a id="download-csv" class="button secondary">Попытки CSV</a></div></div>
+<div class="dashboard">
+<article class="panel"><h2>Утверждённая конфигурация и протокол</h2><div id="protocol-view"></div></article>
+<article class="panel"><h2>Действия по кампании</h2><p class="small">Любое согласование или закрытие сопровождается записью ответственного и основания.</p><form id="campaign-action"><label>Ответственный<input name="actor" maxlength="160" required></label><label>Комментарий / основание<textarea name="note" maxlength="4000" rows="3" required></textarea></label><div class="actions"><button type="submit" id="activate" value="activate" class="button primary">Согласовать протокол</button><button type="submit" id="close" value="close" class="button secondary">Закрыть кампанию</button></div></form></article>
+</div>
+<div id="arm-stats" class="dashboard"></div>
+<article class="panel"><h2>Сравнение до подтверждённой цели</h2><div id="comparison"></div></article>
+<div class="dashboard">
+<article class="panel" id="propose-panel"><h2>Предложить опыт</h2><form id="propose-form"><label>Ответственный<input name="actor" required maxlength="160"></label><label>Ветка<select name="arm"><option value="polysearch">PolySearch</option><option value="baseline">Baseline</option></select></label><label>Подтверждающий / повторный опыт<select name="repeat_of"></select></label><div id="baseline-parameters" class="form-grid"></div><label>Обоснование (для baseline — по протоколу)<textarea name="rationale" rows="2" maxlength="4000" required></textarea></label><div class="actions"><button type="submit" class="button primary">Сформировать план</button></div></form></article>
+<article class="panel" id="plan-detail"><h2>Выбранный план</h2><p class="small">Выберите план из журнала.</p></article>
+</div>
+<article class="panel"><h2>Журнал планов и опытов</h2><div class="table-wrap" id="plans"></div></article>
+<article class="panel"><h2>Аудит</h2><p id="audit-status" class="small"></p><div class="table-wrap" id="events"></div></article>
+</section>
+<footer>PolySearch · локальный пилот · фактические данные вводит специалист</footer>
+</div></main></div></body></html>
