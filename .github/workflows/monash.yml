@@ -1,0 +1,29 @@
+name: Monash source discovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/data/**"
+      - ".github/workflows/monash.yml"
+      - "data/monash/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install openpyxl==3.1.5
+      - run: python -m polysearch.data.monash_source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: monash-v1-inventory
+          path: |
+            data/raw/monash-v1/manifest.json
+            data/raw/monash-v1/inventory.json
+          retention-days: 30
