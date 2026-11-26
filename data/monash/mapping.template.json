@@ -1,0 +1,25 @@
+{
+  "doi": "10.26180/29208134.v1",
+  "monomer": "MMA",
+  "review_note": "TEMPLATE ONLY: replace placeholders with verified experimental metadata and review evidence.",
+  "sources": [
+    {
+      "path": "extracted/<file-id>/<verified CSV path>",
+      "sha256": "<sha256 from inventory>",
+      "experiment_id": "<independent reaction code>",
+      "temperature_c": null,
+      "ct_cm": null,
+      "condition_evidence": "<workbook sheet and row / article>",
+      "encoding": "utf-8-sig",
+      "delimiter": ",",
+      "header_row": 1,
+      "residence_column": "<actual column>",
+      "residence_unit": "min",
+      "conversion_column": "<actual column>",
+      "conversion_unit": "fraction",
+      "measurement_status": "unreviewed",
+      "selection_evidence": "<verified accepted timesweep or author-curated source>",
+      "exclude_rows": []
+    }
+  ]
+}
