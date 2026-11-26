@@ -7,6 +7,8 @@ import re
 import secrets
 import time
 from contextvars import ContextVar
+from urllib.parse import urlsplit
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse, Response
@@ -170,6 +172,14 @@ def install_security(app, db, enabled):
     ):
         raise ValueError("Insecure cookies/HTTP allowed only on explicit loopback origin")
 
+    configured = os.environ.get("POLYSEARCH_TRUSTED_HOSTS")
+    hosts = [x.strip() for x in configured.split(",") if x.strip()] if configured else ["localhost", "127.0.0.1", "[::1]"]
+    if enabled and configured is None:
+        hosts.append(urlsplit(origin).hostname)
+    if not hosts or any(not h or "*" in h or "/" in h or "@" in h for h in hosts):
+        raise ValueError("Explicit trusted host names required")
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts, www_redirect=False)
+
     router = APIRouter(prefix="/api/auth", tags=["auth"])
 
     @router.get("/me")
@@ -206,6 +216,12 @@ def install_security(app, db, enabled):
         # Public assets contain code only, no data. Health is intentionally public.
         public = path in ("/health", "/ready", "/login") or path.startswith("/static/")
         user = None
+        if method not in ("GET", "HEAD", "OPTIONS"):
+            allowed_origin = origin if enabled else str(request.base_url).rstrip("/")
+            supplied = request.headers.get("Origin")
+            if (supplied is not None and supplied != allowed_origin) or request.headers.get("Sec-Fetch-Site") == "cross-site":
+                return JSONResponse({"detail": "Rejected cross-origin mutation"}, status_code=403,
+                                    headers={"Cache-Control": "no-store"})
         if enabled and not public:
             if method not in ("GET", "HEAD"):
                 if request.headers.get("X-PolySearch-Request") != "1" or request.headers.get("Origin") not in (None, origin):

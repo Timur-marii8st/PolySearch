@@ -1,4 +1,4 @@
-"""Local single-project FastAPI service with SQLite persistence."""
+"""Local or authenticated single-organization FastAPI service."""
 import csv
 import io
 import json
@@ -8,6 +8,9 @@ from pathlib import Path
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
+from . import __version__
+from .hardening import RequestBounds
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import Field
@@ -46,12 +49,19 @@ class CSVRequest(StrictModel):
 
 
 def create_app(db_path=None):
-    app = FastAPI(title="PolySearch", version="0.1.0")
+    app = FastAPI(title="PolySearch", version=__version__)
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_request(request, exc):
+        return JSONResponse({"detail": [{"loc": list(e["loc"]), "msg": e["msg"], "type": e["type"]}
+                                        for e in exc.errors()]}, status_code=422,
+                            headers={"Cache-Control": "no-store"})
     location = db_path or database_location()
     secured = auth_enabled()
     store = Store(location)
     if store.db.postgres and not secured:
         raise ValueError("PostgreSQL requires POLYSEARCH_AUTH=required")
+    app.add_middleware(RequestBounds)
     install_security(app, store.db, secured)
     static = Path(__file__).with_name("static")
     app.mount("/static", StaticFiles(directory=static), name="static")

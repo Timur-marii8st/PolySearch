@@ -86,10 +86,18 @@ def calibrate(mean, std, observed, confidence):
     return float(np.sort(residuals)[rank - 1])
 
 
+MAX_TRAIN_TRIALS = 500
+MAX_HISTORY_TRIALS = 5000
+
+
 def recommend(config: ProjectConfig, trials: list[Trial], batch_size=1,
               pool_size=1536, mc_samples=128, excluded_parameters=()):
     if not 1 <= batch_size <= 3 or pool_size < 16 or mc_samples < 1:
         raise ValueError("Invalid search budget")
+    if len(trials) + len(excluded_parameters) > MAX_HISTORY_TRIALS:
+        raise ValueError("History limit exceeded; archive and define a reviewed training subset")
+    if sum(t.status == "completed" and t.role == "train" for t in trials) > MAX_TRAIN_TRIALS:
+        raise ValueError("Exact GP training limit exceeded (500 rows); define a reviewed training subset")
     space = Space(config)
     for trial in trials:
         validate_result(config, trial)
