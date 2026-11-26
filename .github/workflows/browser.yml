@@ -1,0 +1,49 @@
+name: Browser smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/static/**"
+      - "polysearch/api.py"
+      - "pyproject.toml"
+      - "tests/browser/**"
+      - ".github/workflows/browser.yml"
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e . playwright==1.56.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Run browser smoke
+        run: |
+          export POLYSEARCH_DB="$RUNNER_TEMP/polysearch-browser.sqlite3"
+          python -m uvicorn polysearch.api:create_app --factory --host 127.0.0.1 --port 8000 > "$RUNNER_TEMP/server.log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" || true; cat "$RUNNER_TEMP/server.log"' EXIT
+          for i in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/health; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8000/health
+          python tests/browser/smoke.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: polysearch-browser-screens
+          path: artifacts/browser/
+          if-no-files-found: ignore
+          retention-days: 30

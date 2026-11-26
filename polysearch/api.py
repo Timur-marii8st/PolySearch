@@ -11,6 +11,8 @@ from threading import RLock
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 from scipy.stats import qmc
 
@@ -66,6 +68,13 @@ class CSVRequest(StrictModel):
 def create_app(db_path=None):
     app = FastAPI(title="PolySearch", version="0.1.0")
     store = Store(db_path or os.environ.get("POLYSEARCH_DB", "polysearch.sqlite3"))
+    static = Path(__file__).with_name("static")
+    app.mount("/static", StaticFiles(directory=static), name="static")
+
+    @app.get("/", include_in_schema=False)
+    def workspace():
+        return FileResponse(static / "index.html", media_type="text/html",
+                            headers={"Cache-Control": "no-cache"})
 
     def current():
         state = store.load()

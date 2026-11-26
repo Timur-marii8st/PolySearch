@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>PolySearch — лаборатория экспериментов</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">К содержанию</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true">P</span><span>PolySearch<small>EXPERIMENT WORKSPACE</small></span></a>
+    <div class="nav-caption">Рабочее пространство</div>
+    <nav aria-label="Разделы">
+      <a href="#overview" data-nav="overview"><span aria-hidden="true">◫</span> Обзор</a>
+      <a href="#recommend" data-nav="recommend"><span aria-hidden="true">◎</span> Следующий опыт</a>
+      <a href="#journal" data-nav="journal"><span aria-hidden="true">▤</span> Журнал опытов</a>
+      <a href="#settings" data-nav="settings"><span aria-hidden="true">⚙</span> Настройки проекта</a>
+      <a href="#quality" data-nav="quality"><span aria-hidden="true">↗</span> Проверка качества</a>
+    </nav>
+    <div class="sidebar-bottom"><span class="status-dot" aria-hidden="true"></span><div>Локальный режим<small>SQLite · без облака</small></div></div>
+  </aside>
+  <main id="main" tabindex="-1">
+    <header class="topbar"><div class="crumb">PolySearch / <span id="page-name">Обзор</span></div><div class="topbar-actions"><span class="tag" id="mode-label">Нет проекта</span><a class="link" href="/docs">API ↗</a></div></header>
+    <div class="content">
+      <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+      <div id="failure" class="message error" role="alert" hidden></div>
+      <section id="overview" data-page>
+        <div class="page-heading"><div><div class="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО</div><h1>Планирование экспериментов</h1><p>От истории измерений к следующему обоснованному опыту.</p></div><button id="demo-button" class="button secondary" type="button">Запустить демо</button></div>
+        <div id="mode-note" class="notice"></div>
+        <div id="empty-state" class="panel empty" hidden><h2>Создайте первый проект</h2><p>Укажите факторы, целевые диапазоны и ограничения или откройте синтетический демонстратор. Демо не является химической моделью.</p><a class="button primary" href="#settings">Настроить проект</a></div>
+        <div id="stats" class="stats"></div>
+        <div class="dashboard">
+          <article class="panel chart-panel"><div class="panel-heading"><div><div class="eyebrow">ИСТОРИЯ ИЗМЕРЕНИЙ</div><h2>Динамика свойства</h2></div><label class="compact-label">Свойство<select id="chart-target" aria-label="Свойство на графике"></select></label></div><div id="chart" class="chart"></div><p class="small">Ось X — порядковый номер записи в журнале. Каждая точка — измерение; калибровочные данные показаны отдельно.</p></article>
+          <article class="panel summary-panel"><div class="eyebrow">ЦЕЛИ</div><h2>Целевые свойства</h2><div id="target-summary"></div><a class="button primary wide" href="#recommend">Получить рекомендацию</a></article>
+        </div>
+      </section>
+      <section id="recommend" data-page hidden>
+        <div class="page-heading"><div><div class="eyebrow">АКТИВНОЕ ПЛАНИРОВАНИЕ</div><h1>Следующий опыт</h1><p>Подбор новых параметров в заданной допустимой области.</p></div></div>
+        <div class="notice">Рекомендация не подтверждает безопасность режима. Проверьте параметры у технолога до физического опыта. Вероятность достижения цели не калибрована.</div>
+        <article class="panel toolbar"><div><h2>Рассчитать варианты</h2><p class="small">Модель переобучается по текущей истории. Добавление измерения сбрасывает всю предыдущую серию.</p></div><div class="actions"><label class="compact-label">Размер серии<select id="batch-size"><option>1</option><option>2</option><option>3</option></select></label><button class="button primary" id="recommend-button">Рассчитать рекомендации</button></div></article>
+        <div id="recommendations" class="rec-grid"></div>
+        <article class="panel" id="model-report"></article>
+      </section>
+      <section id="journal" data-page hidden>
+        <div class="page-heading"><div><div class="eyebrow">ЭКСПЕРИМЕНТАЛЬНЫЕ ДАННЫЕ</div><h1>Журнал опытов</h1><p>История измерений и источники данных.</p></div><a class="button secondary" id="export-json" href="/api/export.json" download="polysearch-project.json">Экспорт JSON</a></div>
+        <div class="dashboard journal-top">
+          <article class="panel"><h2>Добавить измерение</h2><form id="trial-form"><p id="trial-binding" class="small"></p><div id="trial-fields" class="form-grid"></div><div class="form-grid"><label>Статус<select id="trial-status"><option value="completed">Завершён</option><option value="failed">Неуспешен</option></select></label><label>Роль<select id="trial-role"><option value="train">Обучение</option><option value="calibration">Калибровка</option></select></label></div><label>Примечание<textarea id="trial-note" rows="2" maxlength="2000"></textarea></label><div class="actions"><button type="submit" class="button primary" id="save-trial">Сохранить измерение</button><button type="button" id="clear-binding" class="button secondary" hidden>Отвязать рекомендацию</button></div></form></article>
+          <article class="panel"><h2>Импорт CSV</h2><p class="small">Заголовки должны соответствовать параметрам проекта. Используйте только фактические измерения. Все строки файла проверяются до записи.</p><p class="small">Точки одной кинетической кривой Monash не являются независимыми опытами. Не загружайте подготовленный архив Monash как независимые trials.</p><form id="csv-form"><label>CSV-файл<input type="file" id="csv-file" accept=".csv,text/csv" required></label><p id="csv-info" class="small"></p><div class="actions"><button type="submit" class="button primary" id="import-button">Импортировать CSV</button><button type="button" class="button secondary" id="csv-template">Шаблон CSV</button></div></form></article>
+        </div>
+        <article class="panel"><div class="panel-heading"><h2>Все записи</h2><label class="compact-label">Фильтр<select id="journal-filter"><option value="all">Все записи</option><option value="train">Обучение</option><option value="calibration">Калибровка</option><option value="failed">Неуспешные</option></select></label></div><div id="journal-table" class="table-wrap"></div><div class="pagination"><button id="prev-page" class="button secondary" type="button">Назад</button><span id="page-info" class="small"></span><button id="next-page" class="button secondary" type="button">Далее</button></div></article>
+      </section>
+      <section id="settings" data-page hidden>
+        <div class="page-heading"><div><div class="eyebrow">КОНФИГУРАЦИЯ</div><h1>Настройки проекта</h1><p>Определите управляемые факторы и измеряемые свойства.</p></div></div>
+        <div class="notice">Сервис хранит один проект. Сохранение новой конфигурации заменяет текущий проект и его историю только после явного подтверждения. Перед этим экспортируйте JSON.</div>
+        <form id="config-form" class="config-form">
+          <article class="panel"><div class="panel-heading"><h2>Факторы</h2><button type="button" id="add-factor" class="button secondary">+ Фактор</button></div><p class="small">Имена латиницей: например temperature_c. Нижняя граница должна быть меньше верхней.</p><div id="factor-rows" class="editor-rows"></div></article>
+          <article class="panel"><div class="panel-heading"><h2>Целевые свойства</h2><button type="button" id="add-target" class="button secondary">+ Свойство</button></div><p class="small">Можно оставить одну из границ пустой. Масштаб нормирует отклонение от цели и должен быть положительным.</p><div id="target-rows" class="editor-rows"></div></article>
+          <article class="panel"><h2>Дополнительные настройки</h2><div class="form-grid"><label>Seed<input id="config-seed" type="number" min="0" max="4294967295" step="1" value="42" required></label><label>Номинальный уровень интервала<input id="config-confidence" type="number" min="0.01" max="0.99" step="0.01" value="0.90" required></label></div><label>Линейные ограничения (JSON)<textarea id="config-constraints" rows="4" spellcheck="false">[]</textarea></label><p class="small">Пример: [{"coefficients":{"factor_a":1,"factor_b":2},"upper":3}]. Математическая допустимость не означает технологическую безопасность.</p><div class="actions"><button class="button primary" type="submit" id="save-config">Создать реальный проект</button><button class="button secondary" type="button" id="reload-config">Восстановить форму из проекта</button></div></article>
+        </form>
+      </section>
+      <section id="quality" data-page hidden>
+        <div class="page-heading"><div><div class="eyebrow">ВОСПРОИЗВОДИМОСТЬ</div><h1>Проверка качества</h1><p>Раздельно: сведения текущей модели и результаты научных бенчмарков.</p></div></div>
+        <article class="panel" id="quality-current"></article>
+        <article class="panel"><h2>Monash MMA — групповой ML-бенчмарк</h2><p class="small">Архивные исследовательские результаты; не прогноз для текущего проекта. 785 измерений / 15 групп, предварительная разметка.</p><div class="table-wrap" id="research-table"></div><p class="small">Ridge — простой кандидат по внешнему CV; универсальный оптимизатор текущего API использует независимые GP. Данные не подтверждают промышленную экономию.</p><a href="https://github.com/Timur-marii8st/PolySearch/blob/main/docs/MONASH_ML_RESULTS.md">Полный ML-отчёт ↗</a> · <a href="https://github.com/Timur-marii8st/PolySearch/blob/main/docs/MONASH_BO_RESULTS.md">Архивный BO ↗</a></article>
+      </section>
+      <footer>PolySearch · локальный исследовательский прототип · решения о реальных опытах принимает специалист</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>
