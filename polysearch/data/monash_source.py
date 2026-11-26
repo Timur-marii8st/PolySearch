@@ -31,7 +31,7 @@ def digest(path, algorithm="sha256"):
 
 
 def _checked_url(url):
-    """Permit only HTTPS Figshare endpoints and its known public S3 bucket."""
+    """Permit HTTPS Figshare endpoints and observed public object-storage buckets."""
     p = urlsplit(url)
     host = p.hostname
     direct = host in {"api.figshare.com", "figshare.com", "ndownloader.figshare.com",
@@ -40,8 +40,10 @@ def _checked_url(url):
     s3 = r"s3(?:(?:[.-]dualstack)?[.-][a-z0-9-]+)?\.amazonaws\.com"
     bucket_path = bool(re.fullmatch(s3, host or "") and p.path.startswith("/pfigshare-u-files/"))
     bucket_host = bool(re.fullmatch(r"pfigshare-u-files\." + s3, host or ""))
+    # Monash institutional repository redirects to its own object storage.
+    monash_bucket = host == "au-east.erc.monash.edu.au" and p.path.startswith("/fpfiles/")
     if (p.scheme != "https" or p.username is not None or p.password is not None
-            or p.port not in (None, 443) or not (direct or bucket_path or bucket_host)):
+            or p.port not in (None, 443) or not (direct or bucket_path or bucket_host or monash_bucket)):
         raise ValueError(f"Download URL is outside the approved Figshare HTTPS endpoints (host={host!r}, scheme={p.scheme!r}, bucket={p.path.split('/')[1:2]!r})")
     return url
 

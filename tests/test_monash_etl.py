@@ -117,6 +117,10 @@ def test_figshare_https_urls_allowed():
     virtual = "https://pfigshare-u-files.s3.dualstack.ap-southeast-2.amazonaws.com/55492559/file.csv"
     assert _checked_url(regional) == regional
     assert _checked_url(virtual) == virtual
+    monash = "https://au-east.erc.monash.edu.au/fpfiles/55492559/file.csv"
+    assert _checked_url(monash) == monash
+    with pytest.raises(ValueError):
+        _checked_url("https://au-east.erc.monash.edu.au/other/file.csv")
     handler = _FigshareRedirect()
     redirected = handler.redirect_request(Request(initial), None, 302, "Found", {}, target)
     assert redirected.full_url == target
