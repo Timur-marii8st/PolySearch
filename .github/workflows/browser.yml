@@ -6,6 +6,8 @@ on:
       - "polysearch/static/**"
       - "polysearch/api.py"
       - "polysearch/pilot.py"
+      - "polysearch/exchange.py"
+      - "polysearch/security.py"
       - "pyproject.toml"
       - "tests/browser/**"
       - ".github/workflows/browser.yml"
@@ -41,6 +43,22 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:8000/health
           python tests/browser/smoke.py
+      - name: Authenticated laboratory exchange browser smoke
+        run: |
+          export POLYSEARCH_DB="$RUNNER_TEMP/polysearch-exchange-browser.sqlite3"
+          export POLYSEARCH_AUTH=required POLYSEARCH_ORIGIN=http://127.0.0.1:8001 POLYSEARCH_COOKIE_SECURE=0
+          for role in admin researcher reviewer viewer; do
+            printf '%s\n' 'browser-fixture-only-password' | python -m polysearch.admin user "$role" --role "$role" --password-stdin
+          done
+          python -m uvicorn polysearch.api:create_app --factory --host 127.0.0.1 --port 8001 > "$RUNNER_TEMP/exchange-server.log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" || true; cat "$RUNNER_TEMP/exchange-server.log"' EXIT
+          for i in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8001/health; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8001/health
+          python tests/browser/exchange.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
