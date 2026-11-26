@@ -1,5 +1,7 @@
 # Архивная проверка BO: Monash MMA v1
 
+**Фактические результаты:** [MONASH_BO_RESULTS](MONASH_BO_RESULTS.md).
+
 ## Постановка (фиксируется до запуска)
 
 - Источник: Monash MMA v1, DOI 10.26180/29208134.v1, CC BY 4.0, атрибуция в data/monash/README.md. Проверяется SHA-256 подготовленной таблицы.
