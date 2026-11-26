@@ -11,7 +11,8 @@ import shutil
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path, PurePosixPath
-from urllib.request import urlopen, Request
+from urllib.parse import urlsplit
+from urllib.request import build_opener, HTTPRedirectHandler, Request
 
 ARTICLE_ID = 29208134
 VERSION = 1
@@ -29,8 +30,36 @@ def digest(path, algorithm="sha256"):
     return h.hexdigest()
 
 
+def _checked_url(url):
+    """Permit only HTTPS Figshare endpoints and its known public S3 bucket."""
+    p = urlsplit(url)
+    host = p.hostname
+    direct = host in {"api.figshare.com", "figshare.com", "ndownloader.figshare.com",
+                      "monash.figshare.com"}
+    bucket_path = (host in {"s3-eu-west-1.amazonaws.com", "s3.eu-west-1.amazonaws.com",
+                            "s3.amazonaws.com"} and p.path.startswith("/pfigshare-u-files/"))
+    bucket_host = host in {"pfigshare-u-files.s3.amazonaws.com",
+                           "pfigshare-u-files.s3-eu-west-1.amazonaws.com",
+                           "pfigshare-u-files.s3.eu-west-1.amazonaws.com"}
+    if (p.scheme != "https" or p.username is not None or p.password is not None
+            or p.port not in (None, 443) or not (direct or bucket_path or bucket_host)):
+        raise ValueError("Download URL is outside the approved Figshare HTTPS endpoints")
+    return url
+
+
+class _FigshareRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return super().redirect_request(req, fp, code, msg, headers, _checked_url(newurl))
+
+
+def _https_open(url, timeout, headers=None):
+    request = Request(_checked_url(url), headers=headers or {})
+    # The custom handler checks every redirect before following it.
+    return build_opener(_FigshareRedirect()).open(request, timeout=timeout)
+
+
 def read_metadata():
-    with urlopen(Request(METADATA_URL, headers={"Accept": "application/json"}), timeout=60) as r:
+    with _https_open(METADATA_URL, timeout=60, headers={"Accept": "application/json"}) as r:
         payload = json.loads(r.read(8 * CHUNK))
     if int(payload["id"]) != ARTICLE_ID or int(payload["version"]) != VERSION:
         raise ValueError("Unexpected Figshare release")
@@ -64,12 +93,11 @@ def _download(file, destination):
         return
     url = str(file.get("download_url") or file.get("downloadUrl")
               or f"https://api.figshare.com/v2/file/download/{int(file['id'])}")
-    if not url.startswith("https://"):
-        raise ValueError("Expected HTTPS download URL")
+    _checked_url(url)
     temp = destination.with_suffix(destination.suffix + ".part")
     try:
         size = 0
-        with urlopen(url, timeout=90) as source, temp.open("wb") as out:
+        with _https_open(url, timeout=90) as source, temp.open("wb") as out:
             for chunk in iter(lambda: source.read(CHUNK), b""):
                 size += len(chunk)
                 if size > expected:

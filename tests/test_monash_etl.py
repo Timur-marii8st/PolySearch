@@ -92,3 +92,29 @@ def test_zip_path_traversal(tmp_path):
 def test_filename_traversal():
     with pytest.raises(ValueError, match="Unsafe"):
         _safe_name("../outside.csv")
+
+
+@pytest.mark.parametrize("url", [
+    "file:///etc/passwd", "http://api.figshare.com/v2/file/download/1",
+    "https://api.figshare.com.evil.example/1", "https://user@api.figshare.com/1",
+    "https://api.figshare.com:444/1", "https://127.0.0.1/1",
+    "https://s3-eu-west-1.amazonaws.com/unrelated-bucket/file",
+])
+def test_external_url_rejected(url):
+    from polysearch.data.monash_source import _checked_url
+    with pytest.raises(ValueError):
+        _checked_url(url)
+
+
+def test_figshare_https_urls_allowed():
+    from polysearch.data.monash_source import _checked_url, _FigshareRedirect
+    from urllib.request import Request
+    initial = "https://ndownloader.figshare.com/files/55492559"
+    target = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/55492559/file.csv?X-Amz-Expires=10"
+    assert _checked_url(initial) == initial
+    assert _checked_url(target) == target
+    handler = _FigshareRedirect()
+    redirected = handler.redirect_request(Request(initial), None, 302, "Found", {}, target)
+    assert redirected.full_url == target
+    with pytest.raises(ValueError):
+        handler.redirect_request(Request(initial), None, 302, "Found", {}, "http://127.0.0.1/secret")
