@@ -3,44 +3,22 @@ import csv
 import io
 import json
 import os
-import sqlite3
-from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
-from threading import RLock
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 from scipy.stats import qmc
 
+from .storage import Store, database_location
+from .security import auth_enabled, install_security
 from .pilot import pilot_router
 from .demo import configuration, evaluate
 from .engine import Space, recommend
 from .models import ProjectConfig, ResultInput, Trial, StrictModel, validate_result
-
-
-class Store:
-    def __init__(self, path):
-        self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.lock = RLock()
-        with closing(sqlite3.connect(self.path)) as db, db:
-            db.execute("CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY, payload TEXT NOT NULL)")
-
-    def load(self):
-        with closing(sqlite3.connect(self.path)) as db:
-            row = db.execute("SELECT payload FROM state WHERE id=1").fetchone()
-        return json.loads(row[0]) if row else {"config": None, "trials": [], "recommendations": [],
-                                              "report": None, "revision": 0}
-
-    def save(self, state):
-        payload = json.dumps(state, ensure_ascii=False, allow_nan=False)
-        with closing(sqlite3.connect(self.path)) as db, db:
-            db.execute("INSERT INTO state VALUES (1, ?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload",
-                       (payload,))
 
 
 class ConfigRequest(StrictModel):
@@ -68,7 +46,12 @@ class CSVRequest(StrictModel):
 
 def create_app(db_path=None):
     app = FastAPI(title="PolySearch", version="0.1.0")
-    store = Store(db_path or os.environ.get("POLYSEARCH_DB", "polysearch.sqlite3"))
+    location = db_path or database_location()
+    secured = auth_enabled()
+    store = Store(location)
+    if store.db.postgres and not secured:
+        raise ValueError("PostgreSQL requires POLYSEARCH_AUTH=required")
+    install_security(app, store.db, secured)
     static = Path(__file__).with_name("static")
     app.mount("/static", StaticFiles(directory=static), name="static")
 
@@ -76,6 +59,10 @@ def create_app(db_path=None):
     def workspace():
         return FileResponse(static / "index.html", media_type="text/html",
                             headers={"Cache-Control": "no-cache"})
+
+    @app.get("/login", include_in_schema=False)
+    def login_page():
+        return FileResponse(static / "login.html", media_type="text/html")
 
     @app.get("/pilot", include_in_schema=False)
     def pilot_workspace():
@@ -129,6 +116,22 @@ def create_app(db_path=None):
     @app.get("/health")
     def health():
         return {"status": "ok"}
+
+    @app.get("/ready")
+    def ready():
+        try:
+            ok = store.db.ping()
+        except Exception:
+            ok = False
+        return JSONResponse({"status": "ready" if ok else "unavailable"}, status_code=200 if ok else 503)
+
+    @app.get("/metrics", include_in_schema=False)
+    def metrics():
+        with store.lock:
+            state = store.load()
+            with store.db.transaction() as db:
+                count = db.execute("SELECT COUNT(*) FROM pilot_campaigns").fetchone()[0]
+        return Response(f"# TYPE polysearch_workspace_trials gauge\npolysearch_workspace_trials {len(state['trials'])}\n# TYPE polysearch_pilot_campaigns gauge\npolysearch_pilot_campaigns {count}\n", media_type="text/plain; version=0.0.4")
 
     @app.get("/api/state")
     @app.get("/api/export.json")

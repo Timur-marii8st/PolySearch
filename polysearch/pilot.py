@@ -5,8 +5,6 @@ import io
 import json
 import math
 import platform
-import sqlite3
-from contextlib import closing
 from datetime import datetime, timezone
 from importlib.metadata import version
 from pathlib import Path
@@ -20,6 +18,7 @@ from pydantic import Field, FiniteFloat, StringConstraints
 from threadpoolctl import threadpool_limits
 
 from . import __version__
+from .security import actor_name
 from .engine import Space, recommend
 from .models import Name, ProjectConfig, ResultInput, StrictModel, Trial, validate_result
 
@@ -134,26 +133,29 @@ def verify_events(events):
 
 class CampaignStore:
     """Separate table; workspace reset never erases a pilot campaign."""
-    def __init__(self, path, lock):
-        self.path, self.lock = path, lock
-        with closing(sqlite3.connect(path)) as db, db:
-            db.execute("CREATE TABLE IF NOT EXISTS pilot_campaigns (id TEXT PRIMARY KEY, payload TEXT NOT NULL)")
+    def __init__(self, database):
+        self.db = database
+
+    @property
+    def lock(self):
+        return self.db.lock
 
     def get(self, campaign_id):
-        with closing(sqlite3.connect(self.path)) as db:
+        with self.db.transaction() as db:
             row = db.execute("SELECT payload FROM pilot_campaigns WHERE id=?", (campaign_id,)).fetchone()
         if row is None:
             raise HTTPException(404, "Campaign not found")
         return json.loads(row[0])
 
     def save(self, c):
-        with closing(sqlite3.connect(self.path)) as db, db:
+        with self.db.transaction() as db:
             db.execute("INSERT INTO pilot_campaigns VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload",
                        (c["id"], json.dumps(c, ensure_ascii=False, allow_nan=False)))
 
     def list(self):
-        with closing(sqlite3.connect(self.path)) as db:
-            return [json.loads(row[0]) for row in db.execute("SELECT payload FROM pilot_campaigns ORDER BY rowid DESC")]
+        with self.db.transaction() as db:
+            rows = [json.loads(row[0]) for row in db.execute("SELECT payload FROM pilot_campaigns").fetchall()]
+        return sorted(rows, key=lambda c: c["created_at"], reverse=True)
 
 
 def completed_goal(config, plan):
@@ -224,7 +226,7 @@ def report(c):
 
 def pilot_router(workspace):
     router = APIRouter(prefix="/api/pilot", tags=["pilot"])
-    store = CampaignStore(workspace.path, workspace.lock)
+    store = CampaignStore(workspace.db)
 
     def mutable(cid, request, states=("active",)):
         c = store.get(cid)
@@ -248,6 +250,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns", status_code=201)
     def create(request: CreateCampaign):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             source = workspace.load()
             if not source["config"] or source["config"]["mode"] != "real":
@@ -281,6 +284,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns/{cid}/activate")
     def activate(cid: str, request: Decision):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             c = mutable(cid, request, ("draft",))
             c["state"] = "active"
@@ -291,6 +295,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns/{cid}/plans")
     def propose(cid: str, request: Propose):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             c = mutable(cid, request)
             arm = request.arm
@@ -347,6 +352,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns/{cid}/plans/{pid}/review")
     def review(cid: str, pid: str, request: Review):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             c = mutable(cid, request)
             p = plan_by_id(c, pid)
@@ -360,6 +366,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns/{cid}/plans/{pid}/measurement")
     def measure(cid: str, pid: str, request: Measurement):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             c = mutable(cid, request)
             p = plan_by_id(c, pid)
@@ -388,6 +395,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns/{cid}/plans/{pid}/cancel")
     def cancel(cid: str, pid: str, request: Decision):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             c = mutable(cid, request)
             p = plan_by_id(c, pid)
@@ -401,6 +409,7 @@ def pilot_router(workspace):
 
     @router.post("/campaigns/{cid}/close")
     def close(cid: str, request: Decision):
+        request = request.model_copy(update={"actor": actor_name(request.actor)})
         with store.lock:
             c = mutable(cid, request, ("draft", "active"))
             if any(p["state"] in OPEN for p in c["plans"]):
