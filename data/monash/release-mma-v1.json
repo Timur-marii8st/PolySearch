@@ -1,0 +1,103 @@
+{
+  "doi": "10.26180/29208134.v1",
+  "version": 1,
+  "license": "CC BY 4.0",
+  "files": [
+    {
+      "id": 55492559,
+      "name": "90mma0.1235.csv",
+      "size": 6804,
+      "md5": "7cacfda202d6af0265cb1a275bd4925a"
+    },
+    {
+      "id": 55492553,
+      "name": "80mma0.05.csv",
+      "size": 6549,
+      "md5": "9892e87e04e3d3c40153cf8e8a7cb11d"
+    },
+    {
+      "id": 55492571,
+      "name": "80mma0.075.csv",
+      "size": 7139,
+      "md5": "68013864f14271b8e380a8c509e3f052"
+    },
+    {
+      "id": 55492562,
+      "name": "80mma0.1.csv",
+      "size": 10473,
+      "md5": "d614a5d76f6b63e7cb55d7a9d09674ad"
+    },
+    {
+      "id": 55492565,
+      "name": "80mma0.125.csv",
+      "size": 7997,
+      "md5": "da29ca394b063e9f700bcafb9cfd1ff3"
+    },
+    {
+      "id": 55492577,
+      "name": "90mma0.007.csv",
+      "size": 9550,
+      "md5": "829eac5ea6d1f2f151385f2c98084208"
+    },
+    {
+      "id": 55492556,
+      "name": "90mma0.008.csv",
+      "size": 9798,
+      "md5": "74ce3e878ca3139135d11a47f201f6e9"
+    },
+    {
+      "id": 55492568,
+      "name": "90mma0.023.csv",
+      "size": 11066,
+      "md5": "40ea2146ab8b09243f04565eb4bfe386"
+    },
+    {
+      "id": 55492574,
+      "name": "90mma0.032.csv",
+      "size": 7799,
+      "md5": "3e4fc1d1bd25d5be6d8cbfeb264bba62"
+    },
+    {
+      "id": 55492580,
+      "name": "90mma0.037.csv",
+      "size": 8047,
+      "md5": "d0c8804d87dbd27b27619847287ffe88"
+    },
+    {
+      "id": 55492583,
+      "name": "90mma0.116.csv",
+      "size": 6694,
+      "md5": "83e34555ac1b514fea5c7c299a6887eb"
+    },
+    {
+      "id": 55492589,
+      "name": "100mma0.05.csv",
+      "size": 10413,
+      "md5": "460ecba5952ec83835d623ea1e072dba"
+    },
+    {
+      "id": 55492586,
+      "name": "100mma0.075.csv",
+      "size": 10595,
+      "md5": "db13ad67f4d5e0f39896f99a012bae22"
+    },
+    {
+      "id": 55492613,
+      "name": "100mma0.1.csv",
+      "size": 12124,
+      "md5": "e7a5ebafa2b4ee5562d3fae0786309fd"
+    },
+    {
+      "id": 55492604,
+      "name": "100mma0.15.csv",
+      "size": 12332,
+      "md5": "223fd05e7b85d0c1d201b66f0a008e51"
+    },
+    {
+      "id": 55492913,
+      "name": "Summary_for_folders.xlsx",
+      "size": 16191,
+      "md5": "230eaabd87370c3a99097dcd6eb2e3d0"
+    }
+  ]
+}

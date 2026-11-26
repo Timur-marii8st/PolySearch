@@ -9,6 +9,7 @@ import json
 import re
 import shutil
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path, PurePosixPath
 from urllib.request import urlopen, Request
 
@@ -102,11 +103,18 @@ def _extract(path, target, remaining=MAX_BYTES):
         return used
 
 
-def acquire(root):
+def acquire(root, subset='mma'):
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
     release = read_metadata()
     files = release["files"]
+    if subset == "mma":
+        files = [f for f in files if re.fullmatch(r"\d+mma\d.*\.csv", f["name"], re.I)
+                 or f["name"].lower() == "summary_for_folders.xlsx"]
+        if len(files) != 16 or len([f for f in files if f["name"].lower().endswith(".csv")]) != 15:
+            raise ValueError("Unexpected pinned MMA selection")
+    elif subset != "all":
+        raise ValueError("Unknown release subset")
     if sum(int(f["size"]) for f in files) > MAX_BYTES:
         raise ValueError("Release exceeds configured total download budget")
     raw = root / "raw"
@@ -117,17 +125,24 @@ def acquire(root):
         shutil.rmtree(extracted)
     extracted.mkdir()
     manifest = {"doi": DOI, "article_id": ARTICLE_ID, "version": VERSION,
-                "title": release.get("title"), "license": release.get("license"),
+                "title": release.get("title"), "license": release.get("license"), "subset": subset,
                 "authors": release.get("authors"), "files": []}
-    remaining = MAX_BYTES
-    for f in files:
+    def fetch_one(f):
         name = _safe_name(f["name"])
         file_id = int(f["id"])
         folder = raw / str(file_id)
         folder.mkdir(exist_ok=True)
         path = folder / name
-        print("MONASH_DOWNLOAD " + json.dumps({"id": file_id, "name": name, "size": f['size']}), flush=True)
+        print("MONASH_DOWNLOAD " + json.dumps({"id": file_id, "name": name, "size": f["size"]}), flush=True)
         _download(f, path)
+        return path
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        downloaded = list(executor.map(fetch_one, files))
+    remaining = MAX_BYTES
+    for f, path in zip(files, downloaded):
+        name = _safe_name(f["name"])
+        file_id = int(f["id"])
         manifest["files"].append({"id": file_id, "name": name, "size": path.stat().st_size,
                                   "sha256": digest(path), "md5": digest(path, "md5"),
                                   "path": path.relative_to(root).as_posix()})
@@ -181,7 +196,7 @@ def inventory(root):
                 item["sheets"] = [
                     {"name": sheet.title, "rows": sheet.max_row, "columns": sheet.max_column,
                      "preview": [[str(v)[:200] if v is not None else None for v in row]
-                                 for row in sheet.iter_rows(min_row=1, max_row=min(sheet.max_row or 1, 20),
+                                 for row in sheet.iter_rows(min_row=1, max_row=min(sheet.max_row or 1, 100),
                                                             max_col=min(sheet.max_column or 1, 20), values_only=True)]}
                     for sheet in book.worksheets]
             finally:
@@ -198,8 +213,9 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("data/raw/monash-v1"))
+    parser.add_argument("--subset", choices=["mma", "all"], default="mma")
     args = parser.parse_args()
-    manifest = acquire(args.root)
+    manifest = acquire(args.root, args.subset)
     report = inventory(args.root)
     print("MONASH_MANIFEST " + json.dumps(manifest, ensure_ascii=True), flush=True)
     print("MONASH_FILE_COUNT " + str(len(report["files"])))
@@ -209,7 +225,7 @@ def main():
         if "sheets" in item:
             print("MONASH_WORKBOOK " + json.dumps(item, ensure_ascii=True))
     for item in csvs:
-        if re.search(r"(^|[/_ -])MMA([/_ -]|$)", item["path"], re.I):
+        if "mma" in Path(item["path"]).name.lower():
             print("MONASH_MMA_CSV " + json.dumps(item, ensure_ascii=True))
     if csvs:
         print("MONASH_CSV_SAMPLE " + json.dumps(csvs[0], ensure_ascii=True))
