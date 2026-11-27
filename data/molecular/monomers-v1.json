@@ -1,0 +1,91 @@
+{
+  "status": "name-derived structures; not supplier CAS or stereochemical verification",
+  "monash": {
+    "doi": "10.26180/29208134.v1",
+    "entries": {
+      "BA": [
+        "Butyl acrylate",
+        "C=CC(=O)OCCCC"
+      ],
+      "MMA": [
+        "Methyl methacrylate",
+        "C=C(C)C(=O)OC"
+      ],
+      "VA": [
+        "Vinyl acetate",
+        "C=COC(=O)C"
+      ]
+    }
+  },
+  "raft": {
+    "doi": "10.5281/zenodo.15230215",
+    "workbook_sha256": "9c40f72053e66a7a6c4bdd5d14a92e2af1eb9a89470dc1045824c6f6f8741060",
+    "legend": "Legend for Abbreviations",
+    "entries": {
+      "1": [
+        "Styrene",
+        "C=Cc1ccccc1"
+      ],
+      "2": [
+        "4-Chlorostyrene",
+        "C=Cc1ccc(Cl)cc1"
+      ],
+      "3": [
+        "4-Bromostyrene",
+        "C=Cc1ccc(Br)cc1"
+      ],
+      "4": [
+        "4-Methylstyrene",
+        "C=Cc1ccc(C)cc1"
+      ],
+      "5": [
+        "4-Methoxystyrene",
+        "C=Cc1ccc(OC)cc1"
+      ],
+      "6": [
+        "Methyl methacrylate",
+        "C=C(C)C(=O)OC"
+      ],
+      "7": [
+        "Butyl methacrylate",
+        "C=C(C)C(=O)OCCCC"
+      ],
+      "8": [
+        "Lauryl methacrylate",
+        "C=C(C)C(=O)OCCCCCCCCCCCC"
+      ],
+      "9": [
+        "(2-Dimethylaminoethyl)methacrylate",
+        "C=C(C)C(=O)OCCN(C)C"
+      ],
+      "10": [
+        "Benzyl methacrylate",
+        "C=C(C)C(=O)OCc1ccccc1"
+      ],
+      "11": [
+        "Methyl acrylate",
+        "C=CC(=O)OC"
+      ],
+      "12": [
+        "Butyl acrylate",
+        "C=CC(=O)OCCCC"
+      ],
+      "13": [
+        "Lauryl acrylate",
+        "C=CC(=O)OCCCCCCCCCCCC"
+      ],
+      "14": [
+        "Dimethylaminoethylacrylate",
+        "C=CC(=O)OCCN(C)C"
+      ],
+      "15": [
+        "Benzyl acrylate",
+        "C=CC(=O)OCc1ccccc1"
+      ],
+      "16": [
+        "4-tert-Butylstyrene",
+        "C=Cc1ccc(C(C)(C)C)cc1"
+      ]
+    }
+  }
+}
