@@ -135,6 +135,8 @@ def authorized(role, method, path):
     if method in ("GET", "HEAD"):
         if path == "/exchange" or path == "/api/exchange/inbox" or re.fullmatch(r"/api/exchange/inbox/[^/]+", path) or re.fullmatch(r"/api/exchange/campaigns/[^/]+/orders/[^/]+", path):
             return role in ("admin", "researcher", "reviewer")
+        if path in ("/research", "/api/research/catalog", "/api/research/runs") or re.fullmatch(r"/api/research/runs/[^/]+", path):
+            return role in ("admin", "researcher", "reviewer", "viewer")
         if path == "/metrics":
             return role == "admin"
         if path in ("/", "/pilot", "/docs", "/openapi.json", "/redoc", "/api/auth/me", "/api/state", "/api/export.json", "/api/pilot/campaigns"):
@@ -144,6 +146,8 @@ def authorized(role, method, path):
         return False
     if method != "POST":
         return False
+    if path == "/api/research/runs":
+        return role in ("admin", "researcher")
     if path == "/api/exchange/inbox":
         return role in ("admin", "researcher")
     if re.fullmatch(r"/api/exchange/inbox/[^/]+/review", path):
@@ -231,7 +235,7 @@ def install_security(app, db, enabled):
             if path != "/api/auth/login":
                 user = await run_in_threadpool(accounts.identify, request.cookies.get(COOKIE))
                 if not user:
-                    if method == "GET" and path in ("/", "/pilot", "/exchange", "/docs", "/redoc"):
+                    if method == "GET" and path in ("/", "/pilot", "/exchange", "/research", "/docs", "/redoc"):
                         return RedirectResponse("/login", status_code=303)
                     return JSONResponse({"detail": "Authentication required"}, status_code=401)
                 if not authorized(user["role"], method, path):
@@ -248,7 +252,7 @@ def install_security(app, db, enabled):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
-        if path in ("/", "/pilot", "/exchange", "/login"):
+        if path in ("/", "/pilot", "/exchange", "/research", "/login"):
             response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
         if enabled and method == "POST":
             # No credentials, request bodies, tokens or experimental values.

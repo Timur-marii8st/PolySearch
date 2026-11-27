@@ -85,6 +85,8 @@ class Store:
             db.execute("CREATE TABLE IF NOT EXISTS pilot_campaigns (id TEXT PRIMARY KEY, payload TEXT NOT NULL)")
             db.execute("CREATE TABLE IF NOT EXISTS integration_inbox (id TEXT PRIMARY KEY, source_system TEXT NOT NULL, external_id TEXT NOT NULL, payload TEXT NOT NULL, UNIQUE(source_system, external_id))")
 
+            db.execute("CREATE TABLE IF NOT EXISTS research_runs (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, summary TEXT NOT NULL, payload TEXT NOT NULL)")
+
     @property
     def lock(self):
         return self.db.lock

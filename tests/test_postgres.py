@@ -18,6 +18,7 @@ pytestmark=pytest.mark.skipif(not DSN,reason="Requires disposable PostgreSQL tes
 def test_transaction_and_migration(tmp_path,monkeypatch):
     pg=Store(DSN)
     with pg.db.transaction() as db:
+        db.execute("DELETE FROM research_runs")
         db.execute("DELETE FROM integration_inbox")
         db.execute("DELETE FROM pilot_campaigns")
         db.execute("DELETE FROM state")
@@ -26,7 +27,7 @@ def test_transaction_and_migration(tmp_path,monkeypatch):
     sqlite.save(data)
     with sqlite.db.transaction() as db:
         db.execute("INSERT INTO pilot_campaigns VALUES (?,?)",("fixture",json.dumps({"id":"fixture","created_at":"2026"})))
-    assert migrate(str(tmp_path/"source.db"),pg)=={"workspace_rows":1,"campaigns":1,"inbox_items":0}
+    assert migrate(str(tmp_path/"source.db"),pg)=={"workspace_rows":1,"campaigns":1,"inbox_items":0,"research_runs":0}
     assert pg.load()==data
     with pytest.raises(ValueError,match="overwrite"):
         migrate(str(tmp_path/"source.db"),pg)
@@ -55,6 +56,7 @@ def test_postgres_api(tmp_path,monkeypatch):
     accounts.provision("fixture-admin","test-only-long-password","admin",replace=True)
     with store.db.transaction() as db:
         db.execute("DELETE FROM state")
+        db.execute("DELETE FROM research_runs")
         db.execute("DELETE FROM integration_inbox")
         db.execute("DELETE FROM pilot_campaigns")
         db.execute("DELETE FROM login_attempts")

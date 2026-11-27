@@ -20,6 +20,7 @@ from .storage import Store, database_location
 from .security import auth_enabled, install_security
 from .pilot import pilot_router
 from .exchange import exchange_router
+from .research import research_router
 from .demo import configuration, evaluate
 from .engine import Space, recommend
 from .models import ProjectConfig, ResultInput, Trial, StrictModel, validate_result
@@ -81,6 +82,11 @@ def create_app(db_path=None):
 
     app.include_router(pilot_router(store))
     app.include_router(exchange_router(store))
+    app.include_router(research_router(store))
+
+    @app.get("/research", include_in_schema=False)
+    def research_workspace():
+        return FileResponse(static / "research.html", media_type="text/html", headers={"Cache-Control": "no-cache"})
 
     @app.get("/exchange", include_in_schema=False)
     def exchange_workspace():
