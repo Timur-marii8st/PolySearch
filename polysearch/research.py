@@ -1,4 +1,5 @@
 """Immutable research runs, separate from the operational workspace and pilot."""
+import csv
 import hashlib
 import json
 import platform
@@ -73,9 +74,11 @@ def research_router(store):
                 output=analyze(request)
                 snapshot=request.model_dump(mode="json")
                 runtime=manifest(request.molecular)
-            except (ValueError,OverflowError,ArithmeticError,ValidationError) as e:
+            except (ValueError,OverflowError,ArithmeticError,ValidationError,csv.Error) as e:
                 # Avoid echoing raw data, including malformed numeric strings.
-                if isinstance(e,ValueError) and not isinstance(e,ValidationError) and str(e).startswith(("could not convert","invalid literal")):
+                if isinstance(e,(ValidationError,csv.Error)):
+                    raise HTTPException(422,"Invalid CSV or research data structure") from e
+                if isinstance(e,ValueError) and str(e).startswith(("could not convert","invalid literal")):
                     raise HTTPException(422,"Invalid numeric CSV field") from e
                 raise HTTPException(422,"Research input or numerical calculation invalid: "+str(e)[:300]) from e
             record={"id":str(uuid4()),"created_at":datetime.now(timezone.utc).isoformat(),

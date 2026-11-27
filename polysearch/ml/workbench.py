@@ -197,16 +197,6 @@ class Independent:
         self.key,self.scales=key,np.asarray(scales)
         self.molecular=key=="rdkit_ridge"
 
-    def features(self,X,S,training=False):
-        if not self.molecular:
-            return X
-        d=np.asarray([molecular_features(s)[1] for s in S],float)
-        if training:
-            self.low,self.high=d.min(axis=0),d.max(axis=0)
-        span=self.high-self.low
-        d=(np.clip(d,self.low,self.high)-self.low)/np.where(span>1e-12,span,1.)
-        return np.column_stack([X,d])
-
     def fit(self,X,S,y,g):
         self.heads=[]
         for j in range(y.shape[1]):
@@ -271,15 +261,14 @@ def macro(y,p,g):
 
 
 def eligible_models(request,y):
-    keys=["mean","ridge"]
-    if max(np.isfinite(y).sum(axis=0))<=MAX_GP_ROWS:
-        keys.append("gp")
-    if request.molecular:
-        keys.append("rdkit_ridge")
     if request.coupled_mass:
-        keys.append("coupled")
+        keys=["coupled"] + (["rdkit_coupled"] if request.molecular else [])
+    else:
+        keys=["mean","ridge"]
+        if max(np.isfinite(y).sum(axis=0))<=MAX_GP_ROWS:
+            keys.append("gp")
         if request.molecular:
-            keys.append("rdkit_coupled")
+            keys.append("rdkit_ridge")
     if request.model!="auto":
         if request.model not in keys:
             raise ValueError("Requested model not eligible for dataset/features/row limits")
@@ -344,6 +333,17 @@ def predict_bounds(request,X,S,y,g,Xc,Sc,yc,gc,Xq,Sq,p,pcal):
             row[t.name]={"status":"research_supported" if ok else "abstain","reason":reason,
                         "prediction":float(p[i,j]) if ok else None,
                         "interval":[float(p[i,j]-q),float(p[i,j]+q)] if ok else None}
+            if ok and request.coupled_mass:
+                # Intersect marginal bounds with known algebraic/physical
+                # support. This does not create a joint coverage guarantee.
+                lo,hi=row[t.name]["interval"]
+                if t.name=="conversion_fraction":
+                    lo,hi=max(0.,lo),min(1.,hi)
+                elif t.name=="dispersity":
+                    lo=max(1.,lo)
+                else:
+                    lo=max(0.,lo)
+                row[t.name]["interval"]=[lo,hi]
         result.append(row)
     return result,scores
 
