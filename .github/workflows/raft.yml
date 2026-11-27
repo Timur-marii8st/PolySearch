@@ -1,0 +1,28 @@
+name: RAFT source discovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/data/raft_*.py"
+      - "polysearch/ml/raft_*.py"
+      - ".github/workflows/raft.yml"
+      - "data/raft/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install openpyxl==3.1.5
+      - run: python -m polysearch.data.raft_source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: raft-v1-inventory
+          path: data/raw/raft-v1/inventory.json
+          retention-days: 30
