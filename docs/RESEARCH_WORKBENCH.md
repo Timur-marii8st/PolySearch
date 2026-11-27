@@ -54,3 +54,18 @@ SQLite/PostgreSQL, независимая таблица research_runs. Сбро
 ## Демонстрация
 
 Запустить локальное приложение (см. WEB_UI или DEPLOYMENT), открыть /research, загрузить тестовый пример, нажать «Обучить и проверить модели». Показать выбор модели, раздельные группы, график, отказ за пределами train и предложения по условной цене. Экспортировать JSON; обновить страницу и показать неизменяемый расчёт. Не выдавать значения фикстуры за реальные, не заявлять экономию опытов. Для заказчика отдельно согласовать формат CSV, независимую единицу, бюджет и внешние данные. 
+
+## Фактическая проверка
+
+Коммит 31e002f45ce4673bb6544b9a815987405aea1a3c. [Python CI](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153064): 120 passed, 12 skipped, 1 warning на каждой версии 3.11/3.12. [Server integration](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153067): 35 passed, 1 RDKit-only skipped, 1 warning; в том числе миграция реестра, Compose/restore. [Browser smoke](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153014): предыдущие пользовательские сценарии и RESEARCH_BROWSER_OK (импорт файла, обучение, scatter, отказ, выгрузка, повторное чтение, запрет записи viewer). [Скриншоты](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153014/artifacts/15230406104) — в пределах срока хранения артефакта. [Beta checks](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153091): wheel/sdist, установка, базовый аудит и load smoke прошли. Специализированный RDKit workflow (тесты и повторный полный benchmark) прошёл. [RDKit CI](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153017).
+
+Первый тест coupled отклонил fixture, где после маски оставалось только пять обучающих групп Mn. Исправлена тестовая фикстура, требования валидации не ослаблены. Проверена неизменность выбора модели, training/model fingerprint, калибровки и прогнозов кандидатов при изменении только validation labels. Это программные проверки, не физические измерения или производственная приёмка. Снимок не является сериализованной моделью.
+
+Состояние CI на момент фиксации:
+- [Python tests](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153064): success
+- [Beta release checks](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153091): success
+- [Monash ML benchmark](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064152992): success
+- [Server integration](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153067): success
+- [Monash hybrid scientific benchmark](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153045): in_progress
+- [Browser smoke](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153014): success
+- [Molecular ML v3](https://github.com/Timur-marii8st/PolySearch/actions/runs/46064153017): success
