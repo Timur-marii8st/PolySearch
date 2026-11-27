@@ -8,7 +8,7 @@ from polysearch.ml.molecular import TARGETS
 
 def fixture():
     x=np.arange(12,dtype=float)[:,None]/10
-    s=np.array(["C=C"]*12)
+    s=np.array(["C=C"]*12,dtype="U64")
     c=np.array([["A"]]*12)
     g=np.array([f"g{i//2}" for i in range(12)])
     mn=1000+100*x[:,0]
@@ -72,3 +72,17 @@ def test_target_specific_support_and_descriptor_clip():
     p=model.predict(x[:1],query,c[:1])
     assert np.isfinite(p).all()
     np.testing.assert_allclose(p[:,2]/p[:,1],p[:,3])
+
+
+def test_research_query_validation():
+    pytest.importorskip("rdkit")
+    from polysearch.ml.research_predict import process_query
+    q={"smiles":"C=C","temperature_c":90,"ct_cm":.1,"residence_min":5}
+    x,s,c=process_query("monash",q)
+    assert x.shape==(3,) and s=="C=C" and c==[]
+    with pytest.raises(ValueError):
+        process_query("monash",{**q,"residence_min":True})
+    with pytest.raises(ValueError):
+        process_query("monash",{**q,"extra":1})
+    with pytest.raises(ValueError):
+        process_query("raft",q)

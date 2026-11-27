@@ -30,3 +30,7 @@ python -m polysearch.ml.applicability_benchmark
 ```
 
 [CI](https://github.com/Timur-marii8st/PolySearch/actions/workflows/applicability.yml) проверяет RDKit, тесты, скачивание, ETL, бенчмарк. Не обещать точность на новых материалах, безопасность или экономию. Не подключать к серверу до отдельной приёмки, QC и утверждения критериев.
+
+## Исследовательский CLI
+
+`python -m polysearch.ml.research_predict --dataset monash --query request.json` либо `--dataset raft`. Вход — JSON с `queries` (1–100), `coverage` (0.8/0.9), `width_tolerances` (conversion_width в долях, mass_ratio, dispersity_width). Monash query: smiles, temperature_c, ct_cm, residence_min. RAFT query: smiles, nominal_time_h, raft_agent_code, solvent_code. Данные и единицы зависят от источника. CLI создаёт deterministic proper/calibration split по группам, не использует API и не сохраняет измерения. В каждом свойстве статус research_supported или abstain с причиной; prediction и interval null при отказе. Не выдаёт рецепт или разрешение на опыт. Никакой автоматической подмены неизвестной молекулы ближайшей. Ширина задаётся пользователем, не вшивается как технологический допуск.

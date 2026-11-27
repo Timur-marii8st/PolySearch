@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "polysearch/ml/applicability*.py"
+      - "polysearch/ml/research_predict.py"
       - "polysearch/ml/molecular*.py"
       - "tests/test_applicability.py"
       - "data/molecular/**"
@@ -32,6 +33,26 @@ jobs:
       - run: python -m polysearch.data.raft_source
       - run: python -m polysearch.data.raft_etl
       - run: python -m polysearch.ml.applicability_benchmark
+      - name: Selective CLI smoke (no physical work)
+        run: |
+          mkdir -p artifacts/applicability
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q={"queries":[{"smiles":"C=C(C)C(=O)OC","temperature_c":90,"ct_cm":.05,"residence_min":6},
+                        {"smiles":"C=C","temperature_c":90,"ct_cm":.05,"residence_min":6}],
+             "width_tolerances":{"conversion_width":.2,"mass_ratio":3,"dispersity_width":.3},"coverage":.9}
+          Path("artifacts/applicability/query-fixture.json").write_text(json.dumps(q))
+          PY
+          python -m polysearch.ml.research_predict --dataset monash --query artifacts/applicability/query-fixture.json > artifacts/applicability/query-output.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("artifacts/applicability/query-output.json").read_text())
+          assert d["status"]=="research_only"
+          assert all(p["prediction"] is None and p["status"]=="abstain" for p in d["results"][1]["properties"].values())
+          print("SELECTIVE_CLI_OK")
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: applicability-report

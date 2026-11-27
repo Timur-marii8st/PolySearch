@@ -164,7 +164,7 @@ class MarginalGroupCalibration:
 
 def width_gate(lo,hi,conversion_width,mass_ratio,dispersity_width):
     """User-supplied tolerance on interval width, not physical acceptance limits."""
-    if not 0<conversion_width<=1 or mass_ratio<=1 or dispersity_width<=0:
+    if not np.isfinite([conversion_width,mass_ratio,dispersity_width]).all() or not 0<conversion_width<=1 or mass_ratio<=1 or dispersity_width<=0:
         raise ValueError("Positive explicit width tolerances required")
     lo,hi=np.asarray(lo,float),np.asarray(hi,float)
     if lo.shape!=hi.shape or lo.ndim!=2 or lo.shape[1]!=4:
@@ -186,7 +186,7 @@ def selective_predictions(p,lo,hi,domain_ok,reasons,*,conversion_width,mass_rati
     if p.shape!=good.shape or domain_ok.shape!=good.shape or reasons.shape!=good.shape:
         raise ValueError("Shape mismatch")
     finite=np.isfinite(lo)&np.isfinite(hi)
-    good&=np.isfinite(p)
+    good&=np.isfinite(p)&(p>=lo)&(p<=hi)
     reasons[domain_ok&~finite]="interval_unavailable"
     reasons[domain_ok&finite&~good]="interval_too_wide"
     eligible=domain_ok&good
