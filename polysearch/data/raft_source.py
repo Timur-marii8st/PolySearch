@@ -71,7 +71,7 @@ def inventory(root, manifest):
         book=load_workbook(Path(root)/item["path"],read_only=True,data_only=True)
         try:
             result.append({**item,"sheets":[{"name":s.title,"rows":s.max_row,"columns":s.max_column,
-                "preview":[list(r) for r in s.iter_rows(min_row=1,max_row=min(s.max_row or 1,8),
+                "preview":[list(r) for r in s.iter_rows(min_row=1,max_row=min(s.max_row or 1,60 if s.title=='Legend for Abbreviations' else 8),
                     max_col=min(s.max_column or 1,120),values_only=True)]} for s in book.worksheets]})
         finally:
             book.close()
