@@ -1,4 +1,4 @@
-"""Create an auditable MMA conversion table from reviewed Monash v1 mappings.
+"""Create an auditable monomer conversion table from reviewed Monash v1 mappings.
 
 Raw CSV formats and units must be explicitly established from source records.
 Rows from one reaction (and replicates at identical conditions) share one fold.
@@ -46,8 +46,8 @@ def canonical_condition(monomer, temperature, ratio):
 def validate_mapping(mapping, inventory, root):
     if mapping.get("doi") != DOI or inventory.get("doi") != DOI:
         raise ValueError("Mapping and inventory must refer to pinned Monash v1")
-    if mapping.get("monomer") != "MMA" or not mapping.get("review_note"):
-        raise ValueError("Expected reviewed MMA mapping with provenance note")
+    if mapping.get("monomer") not in {"BA", "MMA", "VA"} or not mapping.get("review_note"):
+        raise ValueError("Expected supported monomer mapping with provenance note")
     sources = mapping.get("sources", [])
     if not sources:
         raise ValueError("No reviewed source mappings supplied")
@@ -94,6 +94,7 @@ def prepare(root, mapping, folds=5, seed=42):
     root = Path(root)
     inventory = json.loads((root / "inventory.json").read_text(encoding="utf-8"))
     sources = validate_mapping(mapping, inventory, root)
+    monomer = mapping["monomer"]
     rows, rejected = [], []
     seen_rows = set()
     counts = Counter()
@@ -102,7 +103,7 @@ def prepare(root, mapping, folds=5, seed=42):
         temp = finite(source["temperature_c"])
         ratio = finite(source["ct_cm"])
         experiment = source["experiment_id"]
-        split_group = canonical_condition("MMA", temp, ratio)
+        split_group = canonical_condition(monomer, temp, ratio)
         header_row = int(source.get("header_row", 1))
         exclusions = source.get("exclude_rows", [])
         with path.open(encoding=source.get("encoding", "utf-8-sig"), newline="") as stream:
@@ -112,7 +113,8 @@ def prepare(root, mapping, folds=5, seed=42):
             names = reader.fieldnames or []
             mapped = {source["residence_column"], source["conversion_column"]}
             mapped.update(source[k] for k in ("status_column", "timesweep_column") if source.get(k))
-            if len(names) != len(set(names)) or not mapped <= set(names):
+            nonempty_names = [n for n in names if n.strip()]
+            if len(nonempty_names) != len(set(nonempty_names)) or not mapped <= set(names):
                 raise ValueError(f"Mapped columns missing or ambiguous: {source['path']}: {names}")
             if source["residence_column"] == source["conversion_column"]:
                 raise ValueError("Residence and conversion columns cannot coincide")
@@ -151,7 +153,7 @@ def prepare(root, mapping, folds=5, seed=42):
                     counts["rejected"] += 1
                     continue
                 rows.append({"experiment_id": experiment, "split_group": split_group,
-                             "monomer": "MMA", "temperature_c": temp, "ct_cm": ratio,
+                             "monomer": monomer, "temperature_c": temp, "ct_cm": ratio,
                              "residence_min": residence, "conversion_fraction": conversion,
                              "source_file": source["path"], "source_row": line,
                              "source_sha256": source["sha256"],
@@ -201,7 +203,7 @@ def prepare(root, mapping, folds=5, seed=42):
         "missing_sources": mapping.get("missing_sources", []),
         "timesweep_diagnostics": sweep_diagnostics,
         "exclusion_reasons": dict(Counter(r["reason"].split(":")[0] for r in rejected)),
-        "doi": DOI, "monomer": "MMA", "task": "predict conversion fraction from residence time and reaction conditions",
+        "doi": DOI, "monomer": monomer, "task": "predict conversion fraction from residence time and reaction conditions",
         "counts": dict(counts), "independent_experiments": len(by_experiment),
         "condition_groups": len(groups), "folds": folds, "seed": seed,
         "fold_group_counts": dict(sorted(Counter(assigned.values()).items())),
@@ -225,7 +227,7 @@ def prepare(root, mapping, folds=5, seed=42):
 def write_outputs(out, rows, rejected, report, mapping_path):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    table = out / "mma_conversion.csv"
+    table = out / (report["monomer"].lower() + "_conversion.csv")
     with table.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=FIELDS)
         writer.writeheader()

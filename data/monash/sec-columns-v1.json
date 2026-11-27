@@ -1,0 +1,593 @@
+{
+  "doi": "10.26180/29208134.v1",
+  "evidence": "DOI 10.1039/D2DD00035K, SI Table S14; independently timed SEC injection",
+  "sources": [
+    {
+      "path": "extracted/55492403/80ba0.06.csv",
+      "sha256": "05e347a48ffb27fea146a4d20b5208702fcdc72f9f76dfba02fe28c930ef0362",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492406/70ba0.06.csv",
+      "sha256": "9bd51151cfcee0f31c5e80934b028b48904cdb1bcff144c1e35495087afb4487",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492409/70ba0.04.csv",
+      "sha256": "2a326d44d32b2004c52db56c595fca2cf8a451734d2f49dd41992bb3871637f1",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492412/80ba0.04.csv",
+      "sha256": "179e6724495ebd47ec1fb013d4ef091767be0af3e9630ef60bcba98f0d676ef8",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492415/90ba0.04.csv",
+      "sha256": "b9ad9921cd908526c4f23f5d4add53e797ac93e3b4f9a292b25d75cf4a8a64ab",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492418/80ba0.135.csv",
+      "sha256": "6dd0c86af109b857a4a0a6178d38bcaceb7c910ccec0344ed20121619aa008e6",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492421/90ba0.025.csv",
+      "sha256": "50b29f0d25fb32f5190639835aced736664c98be898a1e140e08c99bb1a59bc6",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492424/80ba0.1.csv",
+      "sha256": "b74c46d6a7ea2aba77d40d31c80ee37c6fff087e782a41aa0f35f5baf84dd610",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492427/70ba0.025.csv",
+      "sha256": "f7595d9b39c245c810d56739edb8dc48f28de413863b2082d15c14624817625e",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492430/80ba0.025.csv",
+      "sha256": "2a9069544f38934f57ecda8c750f32b3f30c714322607de525fc13fe7fcd5dfe",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492433/70ba0.148.csv",
+      "sha256": "8e4b5b6ebc13d77d322fcf711597558cf50c90799373b6a7b41ffd8af312c28e",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492436/90ba0.06.csv",
+      "sha256": "90f05dc52417a180ed85c1f47fb95bc599275d41d260c3232acdd6bc81dadf4b",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492439/90ba0.1.csv",
+      "sha256": "4ffb8097ae1025ebc6cb69e632f75a580b3fef0882942319635bb37770babfb8",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492442/70ba0.1.csv",
+      "sha256": "58bafadd4e5a8eeb88b33340e2a0e912ab5c3281a44fb44f3ac53a88b2f59aa6",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492445/90ba0.135.csv",
+      "sha256": "baf428013e92c0f7e92f42763fb96803d8d4f57537ceaba266b40af5c92d9b1a",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492553/80mma0.05.csv",
+      "sha256": "9ffcd205c58f16dba08178e5847c84dc8dfa2ae7e7fcb70f8e3e8baea3dcc2ac",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492556/90mma0.008.csv",
+      "sha256": "0c12dcfd68699c1b3c554ff70eeab521185b6afb5799c37d7cf4a52eb6bc1533",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492559/90mma0.1235.csv",
+      "sha256": "4c496b123f746db84a0cfdb3c4530ef50caa2cabb774f327c8969c255c951314",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492562/80mma0.1.csv",
+      "sha256": "f537ff4da304120f5f1d6d9faf3f4dec3e92d56e29e577ef1018261d1cce1e1b",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492565/80mma0.125.csv",
+      "sha256": "9a9b5718e54dcea2829ac6f41f91a24670d659ff8f33576cf2425a6ef4b6d36e",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492568/90mma0.023.csv",
+      "sha256": "e06616c3f247ef9cdb6b908e4f9545532ad60ee219605438cbeb398f353cc852",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492571/80mma0.075.csv",
+      "sha256": "bcb049e1ccc3001d395fa7dbc357d7558f1aff0832db40d905579d56500b559b",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492574/90mma0.032.csv",
+      "sha256": "204d21674fdee574058230b5c85aa7e4b46ab2199d383399d70972c269acaa38",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492577/90mma0.007.csv",
+      "sha256": "1f21d95776907520c5bd827530bf271096f23ee501f31cad7063365ac3ad751a",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492580/90mma0.037.csv",
+      "sha256": "1447d3d280a53f1af913d0b2220a4baf1a0e1db21ed09e72ada1a9fc4537b665",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492583/90mma0.116.csv",
+      "sha256": "d5eb5d70e1f8de8bcf954161e0d8aa730c35728abf336668f6a2864eadcde959",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492586/100mma0.075.csv",
+      "sha256": "3948bdba896dc7ddb931485dc354ca9d75710906de48f705f7901d860d5a4c07",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492589/100mma0.05.csv",
+      "sha256": "8a1a97c73cc255de530c0bfcd2df1434af87a35478dade155984b1cec8c761b4",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492604/100mma0.15.csv",
+      "sha256": "717ead9e15c75c59dee573124e58f8e09f5c608dc8c6633893171a0f749d9c17",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492613/100mma0.1.csv",
+      "sha256": "fd3e14ae50f39846b1a422a0c161aea035398e6ce6c1d1565c3bd56617a6d14d",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492703/85va0.15.csv",
+      "sha256": "de23b57e3b790ff49b605e1a3269b739a5cbdd48da99a7bab4a859a39366f21a",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492706/85va0.05.csv",
+      "sha256": "995131fbb7c02b926542a2c5239a045214e4619c41379eb31aa5c39521f14d4b",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492709/85va0.08.csv",
+      "sha256": "00a416f72f67b0172d9cc7b4afad2212a93d4e1bc06bedbf4fa2954718357aac",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492712/85va0.12.csv",
+      "sha256": "88206c1a1d866a10bbecdcc3b1ea245a53dd3ff768b4392ab1d8886a170ffc95",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492715/90va0.05.csv",
+      "sha256": "9ee7d855c08e7d87651a38957c17179b8359f25f942e008187d5712d838f9b54",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492718/85va0.2.csv",
+      "sha256": "d57ed2e6adfe018fd6507d009efa56234fb12e3921fc66564045ce34a5ea1eba",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492721/90va0.12.csv",
+      "sha256": "e80fe11b0a3a4b3f7f4860bc04bf8ce86113154652204dba20be6aee92ec3280",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492724/90va0.1.csv",
+      "sha256": "6e220a212a0e8b1e00d3fe6df53d7363396cc5bb1a769fbe03e6cbfa8e017e80",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492727/90va0.15.csv",
+      "sha256": "b3c63ca791de26dd0cbd8d7ffab20090988aa478a2a74bca30aea52cc14d4ba6",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492730/90va0.2.csv",
+      "sha256": "b672f2d531c3c20b096047968b16ad165ee8d02c406ab8fe7acf827bf2c96cac",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492733/100va0.1.csv",
+      "sha256": "e19c537460b00820e82417daa60e7761862225dd0ea5a9bb341dbed233ae61ea",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492736/100va0.12.csv",
+      "sha256": "2d627f7f9e325e9fd89b59927c9fa334bc3cba5cff4effb1497ee1e2fd25bfe8",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492739/100va0.15.csv",
+      "sha256": "390da1f006da0300f1f2213535d3743e732070fe698695ab77115ff9dad5b4b3",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492742/100va0.2.csv",
+      "sha256": "a5a99c146da8040b7e1a4bb60bd13398a984e485ebc6f8cda0c8e2f24f681c6e",
+      "columns": {
+        "id": "GPC_number",
+        "mn": "Mn",
+        "mw": "Mw",
+        "dispersity": "D",
+        "residence": "tres_GPC",
+        "mass_unit": "g/mol",
+        "time_unit": "min"
+      }
+    },
+    {
+      "path": "extracted/55492745/100va0.01.csv",
+      "sha256": "a362683bac262eda33abbdee99982d3b5bb9228ca927b4db8df7dad0830df6d6",
+      "columns": null
+    },
+    {
+      "path": "extracted/55492748/85va0.01.csv",
+      "sha256": "240fb792fb5dd2e2d67c728c2a6afe2f861e097169d21532b6e8bed67754e64d",
+      "columns": null
+    },
+    {
+      "path": "extracted/55492751/90va0.01.csv",
+      "sha256": "23a6364741855927a2c77506daf0deac76a78ff990153ca5ca3cc817b9a5cc56",
+      "columns": null
+    }
+  ]
+}
