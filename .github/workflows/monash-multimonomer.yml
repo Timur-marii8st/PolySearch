@@ -1,0 +1,42 @@
+name: Monash multimonomer study
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/data/monash_multimonomer.py"
+      - "polysearch/data/monash_source.py"
+      - "polysearch/data/monash_etl.py"
+      - "polysearch/ml/transfer_benchmark.py"
+      - "data/monash/release-kinetics-v1.json"
+      - "data/monash/mapping.ba-v1.json"
+      - "data/monash/mapping.va-v1.json"
+      - ".github/workflows/monash-multimonomer.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: monash-multimonomer-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  study:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[ml]"
+      - run: python -m polysearch.data.monash_source --subset kinetics --root data/raw/monash-kinetics-v1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: monash-kinetics-inventory
+          path: |
+            data/raw/monash-kinetics-v1/manifest.json
+            data/raw/monash-kinetics-v1/inventory.json
+          retention-days: 30

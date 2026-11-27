@@ -142,6 +142,11 @@ def acquire(root, subset='mma'):
                  or f["name"].lower() == "summary_for_folders.xlsx"]
         if len(files) != 16 or len([f for f in files if f["name"].lower().endswith(".csv")]) != 15:
             raise ValueError("Unexpected pinned MMA selection")
+    elif subset == "kinetics":
+        files = [f for f in files if re.fullmatch(r"\d+(ba|mma|va)\d.*\.csv", f["name"], re.I)
+                 or f["name"] == "Summary_for_folders.xlsx"]
+        if len(files) != 48:
+            raise ValueError("Unexpected pinned kinetics selection")
     elif subset != "all":
         raise ValueError("Unknown release subset")
     if sum(int(f["size"]) for f in files) > MAX_BYTES:
@@ -242,7 +247,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("data/raw/monash-v1"))
-    parser.add_argument("--subset", choices=["mma", "all"], default="mma")
+    parser.add_argument("--subset", choices=["mma", "kinetics", "all"], default="mma")
     args = parser.parse_args()
     manifest = acquire(args.root, args.subset)
     report = inventory(args.root)
@@ -254,7 +259,9 @@ def main():
         if "sheets" in item:
             print("MONASH_WORKBOOK " + json.dumps(item, ensure_ascii=True))
     for item in csvs:
-        if "mma" in Path(item["path"]).name.lower():
+        if args.subset == "kinetics":
+            print("MONASH_KINETIC_SCHEMA " + json.dumps({k:item[k] for k in ("path","sha256","delimiter","encoding","preview") if k in item}, ensure_ascii=True), flush=True)
+        elif "mma" in Path(item["path"]).name.lower():
             print("MONASH_MMA_CSV " + json.dumps(item, ensure_ascii=True))
     if csvs:
         print("MONASH_CSV_SAMPLE " + json.dumps(csvs[0], ensure_ascii=True))
