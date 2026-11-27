@@ -13,3 +13,7 @@ python -m polysearch.data.raft_source
 ```
 
 Source archive and raw workbooks are excluded from Git. Keep observed measurements and fitted/interpolated curves distinct. No copying upstream software into PolySearch, no missing molecular weights imputed from predictions. Review units, timepoint alignment, replicate grouping and license before commercial use.
+
+## Conservative observed-label extraction
+
+`python -m polysearch.data.raft_etl` reads only the pinned evaluation workbook (SHA256 9c40f72053e66a7a6c4bdd5d14a92e2af1eb9a89470dc1045824c6f6f8741060). Explicit positive author AI flags required, explicit negative flags override. Uses real numeric cached observations, discards nonphysical/out-of-calibration and flagged SEC values; retains missing labels as blanks. No fitted or interpolated labels, no reference t=0 pseudo-observations. Nominal hours, not the corrected actual sampling times; preserves original sample IDs and workbook row/column coordinates. Reaction codes are preserved, not treated as ordered numerical chemistry features. Group repeats by monomer/RAFT agent/solvent. This conservative subset is NOT the published 234-curve curation and cannot be directly mixed with Monash. No cross-source model fitted yet.
