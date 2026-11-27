@@ -1,0 +1,39 @@
+name: Applicability and OOD research
+on:
+  push:
+    branches: [main]
+    paths:
+      - "polysearch/ml/applicability*.py"
+      - "polysearch/ml/molecular*.py"
+      - "tests/test_applicability.py"
+      - "data/molecular/**"
+      - ".github/workflows/applicability.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev,ml,molecular]"
+      - run: python -m pytest -q tests/test_applicability.py
+      - run: python -m polysearch.data.monash_source --subset kinetics --root data/raw/monash-kinetics-v1
+      - run: python -m polysearch.data.monash_multimonomer
+      - run: python -m polysearch.data.raft_source
+      - run: python -m polysearch.data.raft_etl
+      - run: python -m polysearch.ml.applicability_benchmark
+      - uses: actions/upload-artifact@v4
+        with:
+          name: applicability-report
+          path: artifacts/applicability/
+          retention-days: 30
