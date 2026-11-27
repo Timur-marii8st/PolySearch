@@ -220,7 +220,7 @@ class Independent:
             else:
                 if len(z)>MAX_GP_ROWS:
                     raise ValueError("GP research row cap exceeded")
-                # Fixed prior/noise in declared target-scale units. No tuning
+                # Fixed prior/noise in standardized outcome units. No tuning
                 # on calibration or validation. Group-balanced observation noise.
                 kernel=ConstantKernel(1.,constant_value_bounds="fixed")*Matern(
                     length_scale=np.full(design.shape[1],.35),length_scale_bounds="fixed",nu=2.5)

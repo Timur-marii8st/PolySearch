@@ -125,7 +125,7 @@ def test_coupled_masked_labels_and_identity():
     for role,values in GROUPS.items():
         for i,x in enumerate(values):
             mn=1000+100*x;d=1.2+.1*x;mw=mn*d
-            rows.append(f"{role}-{i},{role},{x},{.2+.6*x},{mn if i%3!=0 else ''},{mw},{d}")
+            rows.append(f"{role}-{i},{role},{x},{.2+.6*x},{'' if role=='train' and i==0 else mn},{mw},{d}")
     req=StudyRequest.model_validate(fixture(config=cfg,csv="\n".join(rows)+"\n",coupled_mass=True,
         max_interval_width={"conversion_fraction":1,"mn_g_mol":10000,"mw_g_mol":10000,"dispersity":10}))
     r=analyze(req)
