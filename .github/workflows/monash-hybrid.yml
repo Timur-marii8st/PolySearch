@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "polysearch/ml/**"
+      - "polysearch/bo/hybrid_replay.py"
+      - "polysearch/bo/replay.py"
       - "polysearch/data/**"
       - "data/monash/**"
       - ".github/workflows/monash-hybrid.yml"
@@ -28,8 +30,11 @@ jobs:
       - run: python -m polysearch.data.monash_source --subset mma
       - run: python -m polysearch.data.monash_etl --mapping data/monash/mapping.mma-v1.json --folds 5
       - run: python -m polysearch.ml.hybrid_benchmark
+      - run: python -m polysearch.bo.hybrid_replay
       - uses: actions/upload-artifact@v4
         with:
           name: monash-hybrid-benchmark
-          path: artifacts/monash-hybrid/
+          path: |
+            artifacts/monash-hybrid/
+            artifacts/monash-hybrid-bo/
           retention-days: 30

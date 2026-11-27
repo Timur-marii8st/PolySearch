@@ -22,6 +22,7 @@ dependencies = [
 dev = ["pytest==9.0.2", "httpx==0.28.1", "catboost==1.2.8"]
 ml = ["catboost==1.2.8", "openpyxl==3.1.5"]
 server = ["psycopg[binary]==3.2.10"]
+research = ["botorch==0.18.1"]
 
 [tool.setuptools.packages.find]
 include = ["polysearch*"]

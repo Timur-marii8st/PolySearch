@@ -132,7 +132,8 @@ def summarize(values, oracle, target=TARGET):
     return {"curve": curve, "target": hits_summary(target_hits), "near_optimum": hits_summary(near_hits)}
 
 
-def benchmark(items, seeds=SEEDS, n_initial=INITIAL, budget=BUDGET, target=TARGET):
+def benchmark(items, seeds=SEEDS, n_initial=INITIAL, budget=BUDGET, target=TARGET,
+              policies=POLICIES, chooser=choose):
     if not n_initial < budget <= len(items) or not len(seeds) or len(set(seeds)) != len(seeds):
         raise ValueError("Insufficient endpoint candidates or invalid replay configuration")
     X = np.array([[r["temperature_c"], r["ct_cm"]] for r in items])
@@ -140,12 +141,14 @@ def benchmark(items, seeds=SEEDS, n_initial=INITIAL, budget=BUDGET, target=TARGE
     if len(np.unique(X, axis=0)) != len(X):
         raise ValueError("Duplicate conditions in finite pool")
     oracle = float(y.max())  # Evaluation only, never passed to choose().
-    histories = {p: [] for p in POLICIES}
+    if "random" not in policies or len(set(policies)) != len(policies):
+        raise ValueError("Unique policies including random required")
+    histories = {p: [] for p in policies}
     traces = []
     for seed in seeds:
         initial = np.random.default_rng(seed).choice(len(X), n_initial, replace=False).tolist()
-        for p in POLICIES:
-            indices, values = replay_once(X, y, initial, p, seed+100_000, budget)
+        for p in policies:
+            indices, values = replay_once(X, y, initial, p, seed+100_000, budget, chooser=chooser)
             histories[p].append(values)
             best = np.maximum.accumulate(values)
             for step, (index, value, current) in enumerate(zip(indices, values, best), start=1):
@@ -154,9 +157,9 @@ def benchmark(items, seeds=SEEDS, n_initial=INITIAL, budget=BUDGET, target=TARGE
                                "experiment_id": items[index]["experiment_id"],
                                "observed_conversion": value, "best_conversion": float(current),
                                "simple_regret": max(0.0, oracle-float(current))})
-    result = {p: summarize(histories[p], oracle, target) for p in POLICIES}
+    result = {p: summarize(histories[p], oracle, target) for p in policies}
     random_best = np.maximum.accumulate(histories["random"], axis=1)
-    for p in POLICIES:
+    for p in policies:
         delta = np.maximum.accumulate(histories[p], axis=1) - random_best
         result[p]["paired_vs_random"] = [
             {"budget": i+1, "mean_best_difference": float(delta[:, i].mean()),
