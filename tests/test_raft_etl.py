@@ -35,3 +35,17 @@ def test_raft_no_imputation_and_flagged_sec():
     assert obs[0]["nominal_time_h"]==1 and obs[0]["mn_g_mol"]==1000
     assert obs[1]["nominal_time_h"]==2 and obs[1]["conversion_fraction"]==.6
     assert obs[1]["mn_g_mol"] is None
+
+
+def test_unmarked_only_in_provisional_mode():
+    a,b,c,d=[[None]*91 for _ in range(4)]
+    b[1]="sample determiner";b[90]="use data for AI"
+    for t,(start,conv) in TIME_BLOCKS.items():
+        i=start-1;a[i]=f"t={t}h";b[i:i+3]=["Mn","Mw","Ð"];d[i:i+2]=["[g/mol]","[g/mol]"]
+        if conv:b[conv-1]="conversion"
+    row=[None]*91;row[1]="MRG-046-G-A-1-A-DMF";row[2]=1
+    row[15:18]=[1000,1200,1.2];row[23:25]=[2.5,.4]
+    assert observations([a,b,c,d,row])[0]==[]
+    obs,_=observations([a,b,c,d,row],include_unmarked=True)
+    assert len(obs)==1 and obs[0]["selection_basis"]=="unmarked_provisional"
+    assert observations([a,b,c,d,row,row],include_unmarked=True)[0]==[]

@@ -17,7 +17,7 @@ TIME_BLOCKS = {0:(4,15),1:(16,25),2:(26,35),4:(36,45),
                6:(46,None),8:(54,63),10:(64,None),15:(72,81)}
 FIELDS = ["source_doi","experiment_id","condition_group","monomer_code","raft_agent_code","solvent_code",
           "reactor","nominal_time_h","conversion_fraction","mn_g_mol","mw_g_mol","dispersity",
-          "author_note","author_use_ai","source_sheet","source_row","source_columns","workbook_sha256"]
+          "author_note","author_use_ai","selection_basis","source_sheet","source_row","source_columns","workbook_sha256"]
 
 
 def number(value):
@@ -31,11 +31,21 @@ def norm(value):
     return " ".join(str(value or "").strip().lower().split())
 
 
-def selected(note,flag):
+def selection(note,flag):
     n=norm(note)
     explicit_yes=n=="take for ai" or flag==1 or norm(flag) in {"yes","true"}
     explicit_no="do not take" in n or "discard" in n or flag==0 or norm(flag) in {"no","false"}
-    return explicit_yes and not explicit_no
+    if explicit_no:
+        return "explicit_rejection"
+    if explicit_yes:
+        return "explicit_positive"
+    if not n and flag is None:
+        return "unmarked_provisional"
+    return "ambiguous_flag"
+
+
+def selected(note,flag):
+    return selection(note,flag)=="explicit_positive"
 
 
 def decode(sample):
@@ -68,11 +78,11 @@ def sec_flagged(values):
     return bad or any(norm(v) not in {"","false","no","0"} for v in other)
 
 
-def observations(rows):
+def observations(rows,include_unmarked=False):
     header_check(rows)
     counts=Counter()
     result=[]
-    seen=set()
+    id_counts=Counter(str(row[1]).strip() for row in rows[4:] if row[1] and str(row[1]).startswith("MRG-"))
     for line,row in enumerate(rows[4:],5):
         sample=row[1]
         if not sample or not str(sample).startswith("MRG-"):
@@ -83,13 +93,15 @@ def observations(rows):
         except ValueError:
             counts["unrecognized_id"]+=1
             continue
-        if not selected(row[0],row[90]):
-            counts["not_explicitly_selected"]+=1
+        basis=selection(row[0],row[90])
+        counts["flag_"+basis]+=1
+        if basis!="explicit_positive" and not (include_unmarked and basis=="unmarked_provisional"):
+            counts["not_selected"]+=1
+            continue
+        if id_counts[str(sample).strip()]!=1:
+            counts["duplicate_id_rows_quarantined"]+=1
             continue
         counts["selected_rows"]+=1
-        if sample in seen:
-            raise ValueError("Duplicate selected experiment ID; explicit reconciliation required")
-        seen.add(sample)
         group=hashlib.sha256(json.dumps([mon,agent,solvent],separators=(",",":")).encode()).hexdigest()[:16]
         for t,(start,conv_col) in TIME_BLOCKS.items():
             i=start-1
@@ -121,6 +133,7 @@ def observations(rows):
                 "monomer_code":mon,"raft_agent_code":agent,"solvent_code":solvent,"reactor":row[2],
                 "nominal_time_h":t,"conversion_fraction":c,"mn_g_mol":mn,"mw_g_mol":mw,"dispersity":d,
                 "author_note":row[0] or "","author_use_ai":row[90] if row[90] is not None else "",
+                "selection_basis":basis,
                 "source_sheet":"Data","source_row":line,"source_columns":f"{start}:{start+7};conversion={conv_col}",
                 "workbook_sha256":WORKBOOK_SHA})
     return result,counts
@@ -143,18 +156,23 @@ def prepare(root,out):
         rows=list(book["Data"].iter_rows(max_col=91,values_only=True))
     finally:
         book.close()
-    obs,counts=observations(rows)
+    explicit,strict_counts=observations(rows)
+    obs,counts=observations(rows,include_unmarked=True)
     if not obs:
-        raise ValueError("No explicitly selected observed labels")
+        raise ValueError("No provisional observed labels")
     out.mkdir(parents=True,exist_ok=True)
     table=out/"observations.csv"
-    with table.open("w",encoding="utf-8",newline="") as stream:
-        writer=csv.DictWriter(stream,fieldnames=FIELDS)
-        writer.writeheader()
-        writer.writerows(obs)
+    for file,entries in ((table,obs),(out/"explicit_observations.csv",explicit)):
+        with file.open("w",encoding="utf-8",newline="") as stream:
+            writer=csv.DictWriter(stream,fieldnames=FIELDS)
+            writer.writeheader()
+            writer.writerows(entries)
     targets=("conversion_fraction","mn_g_mol","mw_g_mol","dispersity")
     report={"doi":DOI,"workbook_sha256":WORKBOOK_SHA,"table_sha256":digest(table),
-        "status":"provisional_explicit_flags_nominal_time",
+        "status":"provisional_numeric_qc_nominal_time",
+        "strict_explicit_subset":{"counts":dict(strict_counts),"timepoint_rows":len(explicit),
+          "experiments":len({r["experiment_id"] for r in explicit}),"sha256":digest(out/"explicit_observations.csv")},
+        "selection_basis_rows":dict(Counter(r["selection_basis"] for r in obs)),
         "counts":dict(counts),"timepoint_rows":len(obs),
         "experiments":len({r["experiment_id"] for r in obs}),
         "condition_groups":len({r["condition_group"] for r in obs}),
@@ -163,7 +181,8 @@ def prepare(root,out):
         "solvent_codes":sorted({r["solvent_code"] for r in obs}),
         "targets":{t:{"observed_rows":sum(r[t] is not None for r in obs),
                        "groups":len({r["condition_group"] for r in obs if r[t] is not None})} for t in targets},
-        "limitations":"Conservative subset of explicit take-for-AI rows or positive AI flag, negative flags take precedence. "
+        "limitations":"Explicit-positive and unmarked rows form provisional numeric-QC candidates; explicit rejection and ambiguous flags excluded. "
+        "Duplicate IDs quarantined. Strict explicit subset preserved separately. "
         "Not a reproduction of the published 234 curated curves. Nominal sampling times, not corrected exact times. "
         "Source codes retained; no imputed labels, no pooling with Monash, no cross-source accuracy claim."}
     (out/"quality.json").write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding="utf-8")
