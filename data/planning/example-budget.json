@@ -1,0 +1,22 @@
+{
+  "currency": "RUB",
+  "budget_minor": 15000000,
+  "coverage": 0.9,
+  "phases": {
+    "train": {
+      "existing_groups": 0,
+      "target_groups": 12,
+      "cost_per_new_group_minor": 500000
+    },
+    "calibration": {
+      "existing_groups": 0,
+      "target_groups": 9,
+      "cost_per_new_group_minor": 500000
+    },
+    "validation": {
+      "existing_groups": 0,
+      "target_groups": 5,
+      "cost_per_new_group_minor": 500000
+    }
+  }
+}
