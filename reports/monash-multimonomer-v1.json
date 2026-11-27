@@ -1,0 +1,389 @@
+{
+  "source_commit": "be33743f87d31ba97c40ea82972e0086b4b4224b",
+  "workflow_run": 46006483692,
+  "artifact_id": 15200413513,
+  "quality": {
+    "doi": "10.26180/29208134.v1",
+    "quality_status": "provisional",
+    "monomers": {
+      "BA": {
+        "conversion_rows": 735,
+        "experiments": 15,
+        "condition_groups": 15,
+        "conversion_rejected": 1631,
+        "conversion_ranges": {
+          "temperature_c": {
+            "min": 70,
+            "max": 90,
+            "median": 80
+          },
+          "ct_cm": {
+            "min": 0.025,
+            "max": 0.148,
+            "median": 0.06
+          },
+          "residence_min": {
+            "min": 1,
+            "max": 10,
+            "median": 5.38
+          },
+          "conversion_fraction": {
+            "min": 0.003016902,
+            "max": 0.906262119,
+            "median": 0.192731354
+          }
+        },
+        "missing_sources": [],
+        "flagged_experiments": [
+          "BA-1",
+          "BA-10",
+          "BA-2",
+          "BA-3",
+          "BA-4",
+          "BA-5"
+        ],
+        "sec_rows": 100,
+        "sec_rejected": 5,
+        "sec_groups": 15,
+        "sec_no_columns": [],
+        "sec_targets": {
+          "mn_g_mol": 100,
+          "mw_g_mol": 100,
+          "dispersity": 100
+        },
+        "phases": {
+          "original": 15
+        }
+      },
+      "MMA": {
+        "conversion_rows": 785,
+        "experiments": 15,
+        "condition_groups": 15,
+        "conversion_rejected": 2118,
+        "conversion_ranges": {
+          "temperature_c": {
+            "min": 80,
+            "max": 100,
+            "median": 90
+          },
+          "ct_cm": {
+            "min": 0.007,
+            "max": 0.15,
+            "median": 0.05
+          },
+          "residence_min": {
+            "min": 1,
+            "max": 12,
+            "median": 5.975
+          },
+          "conversion_fraction": {
+            "min": 0.0004,
+            "max": 0.2832,
+            "median": 0.0914
+          }
+        },
+        "missing_sources": [
+          {
+            "experiment_id": "MMA-1",
+            "temperature_c": 80,
+            "ct_cm": 0.0396,
+            "condition_evidence": "Summary_for_folders.xlsx, MMA sheet, row 2 (T forward-filled from merged cells)",
+            "code": "80mma0.04",
+            "reason": "CSV missing from pinned release"
+          }
+        ],
+        "flagged_experiments": [
+          "MMA-13",
+          "MMA-16"
+        ],
+        "sec_rows": 109,
+        "sec_rejected": 0,
+        "sec_groups": 15,
+        "sec_no_columns": [],
+        "sec_targets": {
+          "mn_g_mol": 109,
+          "mw_g_mol": 109,
+          "dispersity": 109
+        },
+        "phases": {
+          "original": 15
+        }
+      },
+      "VA": {
+        "conversion_rows": 751,
+        "experiments": 17,
+        "condition_groups": 17,
+        "conversion_rejected": 3280,
+        "conversion_ranges": {
+          "temperature_c": {
+            "min": 85,
+            "max": 100,
+            "median": 90
+          },
+          "ct_cm": {
+            "min": 0.01,
+            "max": 0.2,
+            "median": 0.12
+          },
+          "residence_min": {
+            "min": 1,
+            "max": 10,
+            "median": 5.38
+          },
+          "conversion_fraction": {
+            "min": 0.0001,
+            "max": 0.9387,
+            "median": 0.121
+          }
+        },
+        "missing_sources": [],
+        "flagged_experiments": [
+          "VA-10",
+          "VA-6",
+          "VA-BO-1"
+        ],
+        "sec_rows": 78,
+        "sec_rejected": 20,
+        "sec_groups": 14,
+        "sec_no_columns": [
+          "VA-BO-1",
+          "VA-BO-2",
+          "VA-BO-3"
+        ],
+        "sec_targets": {
+          "mn_g_mol": 78,
+          "mw_g_mol": 78,
+          "dispersity": 78
+        },
+        "phases": {
+          "original": 13,
+          "original_also_bo": 1,
+          "bo_suggestion": 3
+        }
+      }
+    },
+    "note": "NMR and SEC are separate observations with independent residence times. No imputation or nearest-time merge. SEC physical checks are not expert chromatogram QC.",
+    "conversion_rows": 2271,
+    "sec_rows": 287,
+    "condition_groups": 47,
+    "hashes": {
+      "conversion.csv": "c47b41b1c0bc943481fb4ef14e3b5def59ce3c9cefc52ab2338ab9522353fb52",
+      "sec.csv": "53e83a17197e6016c96b69a2353ff83f99090f2734fb7b625cb0ed055aa92dca",
+      "sec_rejected.csv": "15e6f1a1c43e0e516e6aa17b1e5cbe1ecb881c41336208ecdaa8137f239aee0a"
+    }
+  },
+  "benchmark": {
+    "conversion_fraction": {
+      "rows": 2271,
+      "groups": 47,
+      "in_domain": {
+        "local_ridge": {
+          "mae": 0.04401606555776624,
+          "rmse": 0.07590464590593447,
+          "r2": 0.6421743850184702,
+          "group_macro_mae": 0.045168951478089366,
+          "group_macro_rmse": 0.07880710479736151
+        },
+        "pooled_identity_ridge": {
+          "mae": 0.04367332906511595,
+          "rmse": 0.07575763766158232,
+          "r2": 0.6435590795943316,
+          "group_macro_mae": 0.044822642836477904,
+          "group_macro_rmse": 0.07865664117228514
+        },
+        "pooled_numeric_ridge": {
+          "mae": 0.08498257579025655,
+          "rmse": 0.11953802079973948,
+          "r2": 0.11254399807427506,
+          "group_macro_mae": 0.08429821040636201,
+          "group_macro_rmse": 0.1202294730484756
+        }
+      },
+      "transfer": {
+        "BA": {
+          "zero": 0.17324901812016327,
+          "few_shot": {
+            "zero_on_same_test": 0.1705048172617155,
+            "local_3": 0.05811898941240916,
+            "pooled_adapt_3": 0.05275142415109495
+          }
+        },
+        "MMA": {
+          "zero": 0.10717095561105874,
+          "few_shot": {
+            "zero_on_same_test": 0.10757036480656385,
+            "local_3": 0.07884156651703464,
+            "pooled_adapt_3": 0.07342382490083163
+          }
+        },
+        "VA": {
+          "zero": 0.09191088705444253,
+          "few_shot": {
+            "zero_on_same_test": 0.09501291301249143,
+            "local_3": 0.10033004098844064,
+            "pooled_adapt_3": 0.0776998631351509
+          }
+        }
+      }
+    },
+    "mn_g_mol": {
+      "rows": 287,
+      "groups": 44,
+      "in_domain": {
+        "local_ridge": {
+          "mae": 396.23428491915126,
+          "rmse": 746.6927011968451,
+          "r2": 0.9281137816090557,
+          "group_macro_mae": 359.19452388417943,
+          "group_macro_rmse": 688.5048736960742
+        },
+        "pooled_identity_ridge": {
+          "mae": 397.6004617172091,
+          "rmse": 756.3655703208615,
+          "r2": 0.9262392491922439,
+          "group_macro_mae": 359.8854873275537,
+          "group_macro_rmse": 696.956913281685
+        },
+        "pooled_numeric_ridge": {
+          "mae": 850.9776808874573,
+          "rmse": 1542.9924802162398,
+          "r2": 0.693034586957451,
+          "group_macro_mae": 796.4887900697616,
+          "group_macro_rmse": 1430.9934045909931
+        }
+      },
+      "transfer": {
+        "BA": {
+          "zero": 427.68144947028463,
+          "few_shot": {
+            "zero_on_same_test": 419.4868339539987,
+            "local_3": 512.0469223147128,
+            "pooled_adapt_3": 527.7342300175981
+          }
+        },
+        "MMA": {
+          "zero": 2179.9517668547655,
+          "few_shot": {
+            "zero_on_same_test": 2172.1589570568667,
+            "local_3": 1606.3482938758086,
+            "pooled_adapt_3": 1045.4434821387572
+          }
+        },
+        "VA": {
+          "zero": 887.6904952920935,
+          "few_shot": {
+            "zero_on_same_test": 861.8945406683024,
+            "local_3": 124.78672877886419,
+            "pooled_adapt_3": 173.0796376604257
+          }
+        }
+      }
+    },
+    "mw_g_mol": {
+      "rows": 287,
+      "groups": 44,
+      "in_domain": {
+        "local_ridge": {
+          "mae": 614.3429882683338,
+          "rmse": 1311.221417875324,
+          "r2": 0.8875932027010509,
+          "group_macro_mae": 546.8363881016664,
+          "group_macro_rmse": 1194.729155740747
+        },
+        "pooled_identity_ridge": {
+          "mae": 607.1861103792095,
+          "rmse": 1295.3134816448733,
+          "r2": 0.8903041301226422,
+          "group_macro_mae": 540.2173700880818,
+          "group_macro_rmse": 1180.2037577291683
+        },
+        "pooled_numeric_ridge": {
+          "mae": 1161.291467316143,
+          "rmse": 2228.214286448826,
+          "r2": 0.675395591400132,
+          "group_macro_mae": 1082.2381347409046,
+          "group_macro_rmse": 2059.2152009679594
+        }
+      },
+      "transfer": {
+        "BA": {
+          "zero": 622.1244961249521,
+          "few_shot": {
+            "zero_on_same_test": 628.0481787892867,
+            "local_3": 663.5903979144155,
+            "pooled_adapt_3": 665.3196328735331
+          }
+        },
+        "MMA": {
+          "zero": 3026.0824209089556,
+          "few_shot": {
+            "zero_on_same_test": 3012.9046263647742,
+            "local_3": 2470.3385189202163,
+            "pooled_adapt_3": 1664.1022122198924
+          }
+        },
+        "VA": {
+          "zero": 1242.6638290475337,
+          "few_shot": {
+            "zero_on_same_test": 1208.967872082083,
+            "local_3": 174.58373059561467,
+            "pooled_adapt_3": 233.95003555704668
+          }
+        }
+      }
+    },
+    "dispersity": {
+      "rows": 287,
+      "groups": 44,
+      "in_domain": {
+        "local_ridge": {
+          "mae": 0.09296717846337309,
+          "rmse": 0.12716132179762496,
+          "r2": 0.16676180784388162,
+          "group_macro_mae": 0.09335698029122802,
+          "group_macro_rmse": 0.12751779213911027
+        },
+        "pooled_identity_ridge": {
+          "mae": 0.09375870548576881,
+          "rmse": 0.12621869007605924,
+          "r2": 0.17906941153932043,
+          "group_macro_mae": 0.09443066631464632,
+          "group_macro_rmse": 0.12655573205511794
+        },
+        "pooled_numeric_ridge": {
+          "mae": 0.10150633263770545,
+          "rmse": 0.13768876624244636,
+          "r2": 0.023086485341320184,
+          "group_macro_mae": 0.10301437981741352,
+          "group_macro_rmse": 0.13831643006700317
+        }
+      },
+      "transfer": {
+        "BA": {
+          "zero": 0.10786999585261718,
+          "few_shot": {
+            "zero_on_same_test": 0.10754343483255357,
+            "local_3": 0.13580011294957506,
+            "pooled_adapt_3": 0.1168569941093906
+          }
+        },
+        "MMA": {
+          "zero": 0.11309235030030608,
+          "few_shot": {
+            "zero_on_same_test": 0.11495681217161358,
+            "local_3": 0.16529152299301236,
+            "pooled_adapt_3": 0.1414599425522115
+          }
+        },
+        "VA": {
+          "zero": 0.1384033082964532,
+          "few_shot": {
+            "zero_on_same_test": 0.13799786166314643,
+            "local_3": 0.1369997089042889,
+            "pooled_adapt_3": 0.11862196743547611
+          }
+        }
+      }
+    }
+  }
+}
