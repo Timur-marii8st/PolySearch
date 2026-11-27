@@ -38,7 +38,7 @@ jobs:
           from polysearch.api import create_app
           assert __version__ == "1.0.0b1"
           with tempfile.TemporaryDirectory() as d, TestClient(create_app(Path(d)/"wheel.db"), base_url="http://localhost") as c:
-              for path in ("/","/pilot","/exchange","/login","/static/app.js","/static/pilot.js","/static/exchange.js","/static/login.js","/static/session.js","/static/style.css","/ready"):
+              for path in ("/","/pilot","/exchange","/research","/static/research.js","/login","/static/app.js","/static/pilot.js","/static/exchange.js","/static/login.js","/static/session.js","/static/style.css","/ready"):
                   assert c.get(path).status_code == 200,path
               assert c.get("/openapi.json").json()["info"]["version"]=="1.0.0b1"
           print("WHEEL_SMOKE_OK")

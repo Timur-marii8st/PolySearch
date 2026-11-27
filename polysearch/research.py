@@ -84,7 +84,7 @@ def research_router(store):
             record={"id":str(uuid4()),"created_at":datetime.now(timezone.utc).isoformat(),
                     "actor":actor_name("local-operator"),"status":"research_only","input":snapshot,
                     "input_sha256":digest(snapshot),"runtime":runtime,"runtime_sha256":digest(runtime),
-                    "model_version":digest({"runtime":runtime,"input":snapshot,"selected_model":output["selected_model"]}),
+                    "model_version":digest({"runtime":runtime,"training_sha256":output["training_sha256"],"selected_model":output["selected_model"]}),
                     "result":output}
             record["record_sha256"]=digest(record)
             summary={"name":request.name,"dataset_kind":request.dataset_kind,"actor":record["actor"],

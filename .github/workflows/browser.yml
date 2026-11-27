@@ -7,6 +7,8 @@ on:
       - "polysearch/api.py"
       - "polysearch/pilot.py"
       - "polysearch/exchange.py"
+      - "polysearch/research.py"
+      - "polysearch/ml/workbench.py"
       - "polysearch/security.py"
       - "pyproject.toml"
       - "tests/browser/**"
@@ -59,6 +61,7 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:8001/health
           python tests/browser/exchange.py
+          python tests/browser/research.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -4,9 +4,9 @@ No code execution, artifact deserialization, equipment control, or automatic
 promotion to the pilot optimizer. Selection uses proper training groups only.
 """
 import csv
+import hashlib
 import io
-import math
-from collections import Counter
+import json
 from typing import Annotated, Literal
 
 import numpy as np
@@ -354,19 +354,21 @@ def collection_plan(request,training,candidates):
         return {"suggestions":[],"spent_minor":0,"remaining_minor":request.budget_minor}
     X,S,_,_=arrays(request.config,training)
     Q,T,_,_=arrays(request.config,candidates)
-    if request.molecular:
-        cats=sorted(set(S)|set(T))
-        X=np.column_stack([X,np.column_stack([S==m for m in cats]).astype(float)])
-        Q=np.column_stack([Q,np.column_stack([T==m for m in cats]).astype(float)])
-    chosen=[];spent=0;seen=X.copy()
+    chosen=[];spent=0;seen=X.copy();seen_molecules=S.copy()
     while len(chosen)<request.max_suggestions:
         choices=[i for i,c in enumerate(candidates) if i not in chosen and c["cost_minor"]<=request.budget_minor-spent]
         if not choices:
             break
-        dist=np.linalg.norm(Q[choices,None,:]-seen[None,:,:],axis=2).min(axis=1)/np.sqrt(Q.shape[1])
+        distances=np.sum((Q[choices,None,:]-seen[None,:,:])**2,axis=2)
+        if request.molecular:
+            # Exact identity distance equivalent to a categorical one-hot pair,
+            # without allocating a potentially huge dense molecule matrix.
+            distances+=2.*(T[choices,None]!=seen_molecules[None,:])
+        dist=np.sqrt(distances.min(axis=1)/(Q.shape[1]+(2 if request.molecular else 0)))
         score=dist/np.asarray([candidates[i]["cost_minor"] for i in choices])
         ix=choices[int(np.argmax(score))]
         chosen.append(ix);spent+=candidates[ix]["cost_minor"];seen=np.vstack([seen,Q[ix]])
+        seen_molecules=np.append(seen_molecules,T[ix])
     return {"suggestions":[{"id":candidates[i]["id"],"cost_minor":candidates[i]["cost_minor"],
                             "status":"operator_review_required","method":"maximin_per_cost"} for i in chosen],
             "spent_minor":spent,"remaining_minor":request.budget_minor-spent}
@@ -405,7 +407,8 @@ def analyze(request):
             # Diagnostic only: never label these retrospective numbers as a recommendation.
             "diagnostic_scatter":[{"observed":float(yv[i,j]),"predicted":float(pv[i,j]),"supported":bool(accepted[i])}
                                   for i in np.flatnonzero(k)[:200]]}
-    return {"selected_model":key,"selection":cv,"calibration":cal,"validation":validation,
+    training_sha256=hashlib.sha256(json.dumps({"config":request.config.model_dump(mode="json"),"train":roles["train"]},sort_keys=True,separators=(",",":"),allow_nan=False,ensure_ascii=False).encode()).hexdigest()
+    return {"selected_model":key,"training_sha256":training_sha256,"selection":cv,"calibration":cal,"validation":validation,
             "counts":{k:{"rows":len(v),"groups":len({r["group_id"] for r in v})} for k,v in roles.items()},
             "candidate_predictions":[{**c,"properties":p} for c,p in zip(candidates,result)],
             "collection_plan":collection_plan(request,roles["train"],candidates),
