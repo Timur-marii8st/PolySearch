@@ -1,0 +1,804 @@
+{
+  "source_commit": "4681702a56bac1c6625361f254e3363bd3d29fcb",
+  "workflow_run": 46005250676,
+  "artifact_id": 15201860627,
+  "table_sha256": "f422958f34ae742ece88017c16bf3ddb9e95e23c150195bddeaa50bceb8e8809",
+  "scenarios": {
+    "primary": {
+      "pool_size": 15,
+      "oracle": 0.2234,
+      "policies": {
+        "random": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.1816796875,
+              "mean_regret": 0.041720312499999995,
+              "median_best": 0.2047,
+              "best_q25": 0.1332,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.640625,
+              "near_optimum_hit_fraction": 0.328125
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.2029328125,
+              "mean_regret": 0.020467187499999994,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.828125,
+              "near_optimum_hit_fraction": 0.59375
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.21226250000000002,
+              "mean_regret": 0.011137499999999998,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.921875,
+              "near_optimum_hit_fraction": 0.703125
+            }
+          ],
+          "target": {
+            "success_fraction": 0.921875,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.96875,
+            "misses": 5
+          },
+          "near_optimum": {
+            "success_fraction": 0.703125,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 7.21875,
+            "misses": 19
+          }
+        },
+        "maximin": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.19966093750000002,
+              "mean_regret": 0.023739062499999998,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.78125,
+              "near_optimum_hit_fraction": 0.6875
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            }
+          ],
+          "target": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 3.890625,
+            "misses": 0
+          },
+          "near_optimum": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4.5,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.65625,
+            "misses": 0
+          }
+        },
+        "ridge_greedy": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.2160953125,
+              "mean_regret": 0.007304687499999998,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 0.609375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            }
+          ],
+          "target": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 3.28125,
+            "misses": 0
+          },
+          "near_optimum": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.859375,
+            "misses": 0
+          }
+        },
+        "gp_ei": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.20802343750000002,
+              "mean_regret": 0.015376562499999996,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.921875,
+              "near_optimum_hit_fraction": 0.515625
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            }
+          ],
+          "target": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 3.546875,
+            "misses": 0
+          },
+          "near_optimum": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 5,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.96875,
+            "misses": 0
+          }
+        },
+        "ridge_residual_gp_ei": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.21221406250000002,
+              "mean_regret": 0.011185937499999996,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.953125,
+              "near_optimum_hit_fraction": 0.609375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            }
+          ],
+          "target": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 3.4375,
+            "misses": 0
+          },
+          "near_optimum": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 5,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.765625,
+            "misses": 0
+          }
+        },
+        "rate_ridge_greedy": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.2117203125,
+              "mean_regret": 0.011679687499999997,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.953125,
+              "near_optimum_hit_fraction": 0.609375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            }
+          ],
+          "target": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 3.453125,
+            "misses": 0
+          },
+          "near_optimum": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 5,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.890625,
+            "misses": 0
+          }
+        },
+        "rate_gp_ei": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.14638281250000001,
+              "mean_regret": 0.07701718749999999,
+              "median_best": 0.1208,
+              "best_q25": 0.1114,
+              "best_q75": 0.2047,
+              "target_hit_fraction": 0.359375,
+              "near_optimum_hit_fraction": 0.15625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.2155625,
+              "mean_regret": 0.007837499999999997,
+              "median_best": 0.2234,
+              "best_q25": 0.2047,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 0.984375,
+              "near_optimum_hit_fraction": 0.640625
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.22340000000000002,
+              "mean_regret": 0,
+              "median_best": 0.2234,
+              "best_q25": 0.2234,
+              "best_q75": 0.2234,
+              "target_hit_fraction": 1,
+              "near_optimum_hit_fraction": 1
+            }
+          ],
+          "target": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 3.421875,
+            "misses": 0
+          },
+          "near_optimum": {
+            "success_fraction": 1,
+            "median_hit_cost_successes_only": 5,
+            "mean_capped_cost_budget_plus_one_for_misses": 4.78125,
+            "misses": 0
+          }
+        }
+      }
+    },
+    "sensitivity": {
+      "pool_size": 13,
+      "oracle": 0.1332,
+      "policies": {
+        "random": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.1216484375,
+              "mean_regret": 0.011551562500000008,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.328125
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.12782656250000002,
+              "mean_regret": 0.005373437500000003,
+              "median_best": 0.1332,
+              "best_q25": 0.1208,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.609375
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.130478125,
+              "mean_regret": 0.002721875000000002,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.78125
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.78125,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 7.15625,
+            "misses": 14
+          }
+        },
+        "maximin": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.1247296875,
+              "mean_regret": 0.008470312500000006,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.46875
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.1259796875,
+              "mean_regret": 0.007220312500000006,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.46875
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.126378125,
+              "mean_regret": 0.006821875000000005,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.46875
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.46875,
+            "median_hit_cost_successes_only": 4,
+            "mean_capped_cost_budget_plus_one_for_misses": 7.71875,
+            "misses": 34
+          }
+        },
+        "ridge_greedy": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.12343124999999999,
+              "mean_regret": 0.009768750000000007,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.4375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.130265625,
+              "mean_regret": 0.002934375000000002,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.765625
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.13223125000000002,
+              "mean_regret": 0.0009687500000000006,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.921875
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.921875,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 6.359375,
+            "misses": 5
+          }
+        },
+        "gp_ei": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.12455625,
+              "mean_regret": 0.008643750000000007,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.390625
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.1273125,
+              "mean_regret": 0.005887500000000005,
+              "median_best": 0.1332,
+              "best_q25": 0.1208,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.53125
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.13068125000000003,
+              "mean_regret": 0.002518750000000002,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.796875
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.796875,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 7.296875,
+            "misses": 13
+          }
+        },
+        "ridge_residual_gp_ei": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.12395624999999999,
+              "mean_regret": 0.009243750000000007,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.34375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.128115625,
+              "mean_regret": 0.005084375000000004,
+              "median_best": 0.1332,
+              "best_q25": 0.1208,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.59375
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.13145625,
+              "mean_regret": 0.0017437500000000012,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.859375
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.859375,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 7.109375,
+            "misses": 9
+          }
+        },
+        "rate_ridge_greedy": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.12338437499999999,
+              "mean_regret": 0.009815625000000008,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.34375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.128309375,
+              "mean_regret": 0.0048906250000000035,
+              "median_best": 0.1332,
+              "best_q25": 0.1208,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.609375
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.13242500000000001,
+              "mean_regret": 0.0007750000000000005,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.9375
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.9375,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 6.921875,
+            "misses": 4
+          }
+        },
+        "rate_gp_ei": {
+          "curve": [
+            {
+              "budget": 3,
+              "mean_best": 0.11112187500000001,
+              "mean_regret": 0.02207812500000001,
+              "median_best": 0.1202,
+              "best_q25": 0.0925,
+              "best_q75": 0.1208,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.140625
+            },
+            {
+              "budget": 5,
+              "mean_best": 0.12477968749999999,
+              "mean_regret": 0.008420312500000008,
+              "median_best": 0.1208,
+              "best_q25": 0.1202,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.375
+            },
+            {
+              "budget": 8,
+              "mean_best": 0.12870625000000002,
+              "mean_regret": 0.004493750000000003,
+              "median_best": 0.1332,
+              "best_q25": 0.1208,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.640625
+            },
+            {
+              "budget": 10,
+              "mean_best": 0.13223125000000002,
+              "mean_regret": 0.0009687500000000006,
+              "median_best": 0.1332,
+              "best_q25": 0.1332,
+              "best_q75": 0.1332,
+              "target_hit_fraction": 0,
+              "near_optimum_hit_fraction": 0.921875
+            }
+          ],
+          "target": {
+            "success_fraction": 0,
+            "median_hit_cost_successes_only": null,
+            "mean_capped_cost_budget_plus_one_for_misses": 11,
+            "misses": 64
+          },
+          "near_optimum": {
+            "success_fraction": 0.921875,
+            "median_hit_cost_successes_only": 6,
+            "mean_capped_cost_budget_plus_one_for_misses": 6.75,
+            "misses": 5
+          }
+        }
+      }
+    }
+  }
+}

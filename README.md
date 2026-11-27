@@ -50,6 +50,8 @@ flowchart LR
 | [DATA](docs/DATA.md) | Данные, источники, контракт, ETL |
 | [MONASH_ML](docs/MONASH_ML.md) | Протокол сравнения четырёх моделей |
 | [MONASH_ML_RESULTS](docs/MONASH_ML_RESULTS.md) | Фактические результаты на 15 группах MMA |
+| [SCIENTIFIC_V2](docs/SCIENTIFIC_V2.md) | Гибридные суррогаты, BoTorch, cost-aware BO |
+| [SCIENTIFIC_V2_RESULTS](docs/SCIENTIFIC_V2_RESULTS.md) | Фактическое сравнение семи моделей и оптимизаторов |
 | [MONASH_BO](docs/MONASH_BO.md) | Архивный протокол последовательного выбора |
 | [MONASH_BO_RESULTS](docs/MONASH_BO_RESULTS.md) | Результаты пяти стратегий и анализ чувствительности |
 | [WEB_UI](docs/WEB_UI.md) | Локальное рабочее пространство исследователя |
@@ -98,3 +100,7 @@ python -m uvicorn polysearch.api:create_app --factory --host 127.0.0.1 --port 80
 ### Обмен с лабораторией
 
 Откройте `/exchange` после создания и согласования плана. Универсальный JSON/API, проверка хеша и единиц, очередь операторской проверки и атомарное принятие измерения. Авторизованный браузерный сценарий обмена проверен в CI на отдельных учётных записях. Коннектор конкретного LIMS не проверен; требуется заказчик. См. [LAB_EXCHANGE](docs/LAB_EXCHANGE.md). Изолированное программное демо: `POLYSEARCH_AUTH=local python -m polysearch.lab_demo --out artifacts/lab-demo` (установить dev extras; только вымышленные программные фикстуры).
+
+### Научное ядро v2 (исследовательский модуль)
+
+Добавлены Rate Ridge, Rate GP, Kinetic Residual GP и опциональный BoTorch. Сравнение на прежнем provisional MMA-архиве не показало устойчивого преимущества над Ridge; модели эффективной скорости сохраняют монотонность выбранной формулы, интервалы требуют улучшения. Многокритериальная оптимизация и учёт известной стоимости проверены на синтетической задаче. Рабочий API не заменён. 90 тестов на Python 3.11/3.12; отдельная research-проверка — 5 тестов. См. [результаты](docs/SCIENTIFIC_V2_RESULTS.md).

@@ -1,0 +1,106 @@
+{
+  "source_commit": "4681702a56bac1c6625361f254e3363bd3d29fcb",
+  "workflow_run": 46005250708,
+  "artifact_id": 15201121479,
+  "table_sha256": "f422958f34ae742ece88017c16bf3ddb9e95e23c150195bddeaa50bceb8e8809",
+  "quality_status": "provisional",
+  "real_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "real_budget": 8,
+  "real": {
+    "primary": {
+      "pool_size": 15,
+      "oracle": 0.2234,
+      "policies": {
+        "random": {
+          "best_at5": 0.1922875,
+          "best_at8": 0.1922875,
+          "near_at8": 0.375
+        },
+        "ridge_greedy": {
+          "best_at5": 0.2163875,
+          "best_at8": 0.2234,
+          "near_at8": 1
+        },
+        "gp_ei": {
+          "best_at5": 0.1988875,
+          "best_at8": 0.2234,
+          "near_at8": 1
+        },
+        "botorch_qlognei": {
+          "best_at5": 0.21405,
+          "best_at8": 0.2234,
+          "near_at8": 1
+        }
+      }
+    },
+    "sensitivity": {
+      "pool_size": 13,
+      "oracle": 0.1332,
+      "policies": {
+        "random": {
+          "best_at5": 0.1257875,
+          "best_at8": 0.130025,
+          "near_at8": 0.75
+        },
+        "ridge_greedy": {
+          "best_at5": 0.1216875,
+          "best_at8": 0.13165,
+          "near_at8": 0.875
+        },
+        "gp_ei": {
+          "best_at5": 0.121325,
+          "best_at8": 0.12685,
+          "near_at8": 0.5
+        },
+        "botorch_qlognei": {
+          "best_at5": 0.1257875,
+          "best_at8": 0.1301,
+          "near_at8": 0.75
+        }
+      }
+    }
+  },
+  "toy_seeds": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "toy_cost_budget": 16,
+  "toy_oracle_hypervolume": 0.5233404834474663,
+  "toy_metrics": {
+    "random": {
+      "mean_hypervolume": 0.370073421104699,
+      "mean_queries": 6.5,
+      "mean_spent": 16
+    },
+    "qlognehvi": {
+      "mean_hypervolume": 0.3886905292497901,
+      "mean_queries": 6.5,
+      "mean_spent": 16
+    },
+    "qlognehvi_per_cost": {
+      "mean_hypervolume": 0.3821004301020842,
+      "mean_queries": 6.75,
+      "mean_spent": 16
+    }
+  },
+  "environment": {
+    "python": "3.12.16",
+    "torch": "2.10.0+cpu",
+    "botorch": "0.18.1",
+    "gpytorch": "1.15.2",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "limitations": "Real archive has only conversion and assumed equal cost; eight seeds are exploratory. Toy objectives and costs are invented dimensionless functions, not chemical data or monetary savings. q=1, fixed known noise assumption, no production deployment or independent validation."
+}

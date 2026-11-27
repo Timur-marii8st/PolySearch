@@ -1,0 +1,241 @@
+{
+  "source_commit": "4681702a56bac1c6625361f254e3363bd3d29fcb",
+  "workflow_run": 46005250676,
+  "artifact_id": 15201860627,
+  "doi": "10.26180/29208134.v1",
+  "table_sha256": "f422958f34ae742ece88017c16bf3ddb9e95e23c150195bddeaa50bceb8e8809",
+  "quality_status": "provisional",
+  "environment": {
+    "python": "3.12.16",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "catboost": "1.2.8"
+  },
+  "limitations": "Repeated exploratory evaluation of the same provisional archive. Rate model is an apparent first-order approximation, not a mechanistic simulator. Model intervals ignore trend estimation uncertainty; rate latent intervals omit measurement noise. 80% group conformal uses four groups, exchangeability not established. No independent prospective validation.",
+  "primary": {
+    "rows": 785,
+    "condition_groups": 15,
+    "models": {
+      "ridge": {
+        "mae": 0.0311408935235691,
+        "rmse": 0.037122507554204605,
+        "r2": 0.5608281372397085,
+        "group_macro_mae": 0.03213690352769726,
+        "group_macro_rmse": 0.03797391573852712
+      },
+      "catboost": {
+        "mae": 0.036830308738789765,
+        "rmse": 0.04506076376580279,
+        "r2": 0.35292146108436306,
+        "group_macro_mae": 0.037883543947196036,
+        "group_macro_rmse": 0.045863035344799505
+      },
+      "gp": {
+        "mae": 0.04746751676899033,
+        "rmse": 0.05974307063816277,
+        "r2": -0.13745697943396884,
+        "group_macro_mae": 0.04864207144100447,
+        "group_macro_rmse": 0.06065361647045234
+      },
+      "kinetic": {
+        "mae": 0.03145986262688799,
+        "rmse": 0.03905403734418956,
+        "r2": 0.5139378837730244,
+        "group_macro_mae": 0.032562941059026594,
+        "group_macro_rmse": 0.040028756915303915
+      },
+      "rate_ridge": {
+        "mae": 0.031514044574349406,
+        "rmse": 0.03844247922615492,
+        "r2": 0.5290414608469851,
+        "group_macro_mae": 0.03246273851312233,
+        "group_macro_rmse": 0.03932206592684381
+      },
+      "rate_gp": {
+        "mae": 0.0320871251141725,
+        "rmse": 0.04043144897016176,
+        "r2": 0.47904703945446836,
+        "group_macro_mae": 0.03250719074222061,
+        "group_macro_rmse": 0.04062728015580333
+      },
+      "kinetic_residual_gp": {
+        "mae": 0.03134573986748423,
+        "rmse": 0.03903709738514979,
+        "r2": 0.5143594579379467,
+        "group_macro_mae": 0.03213853677289131,
+        "group_macro_rmse": 0.039644885594960794
+      }
+    },
+    "shape": {
+      "ridge": {
+        "decreasing_steps": 0,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 14
+      },
+      "catboost": {
+        "decreasing_steps": 91,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 15
+      },
+      "gp": {
+        "decreasing_steps": 284,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 15
+      },
+      "kinetic": {
+        "decreasing_steps": 0,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 0
+      },
+      "rate_ridge": {
+        "decreasing_steps": 0,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 0
+      },
+      "rate_gp": {
+        "decreasing_steps": 0,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 0
+      },
+      "kinetic_residual_gp": {
+        "decreasing_steps": 18,
+        "grid_steps": 960,
+        "nonzero_at_t0_groups": 0
+      }
+    },
+    "warning_count": 0,
+    "intervals": {
+      "rate_gp": {
+        "nominal90": {
+          "row_coverage": 0.45605095541401275,
+          "group_macro_row_coverage": 0.4409428248094061,
+          "whole_group_coverage": 0.06666666666666667,
+          "mean_width": 0.0774739329273951,
+          "groups": 15
+        },
+        "group_conformal80": {
+          "row_coverage": 0.9987261146496815,
+          "group_macro_row_coverage": 0.9986394557823128,
+          "whole_group_coverage": 0.9333333333333333,
+          "mean_width": 0.7713990908577755,
+          "groups": 15
+        }
+      },
+      "kinetic_residual_gp": {
+        "nominal90": {
+          "row_coverage": 0.2662420382165605,
+          "group_macro_row_coverage": 0.2482165797482511,
+          "whole_group_coverage": 0,
+          "mean_width": 0.02958128439896374,
+          "groups": 15
+        },
+        "group_conformal80": {
+          "row_coverage": 0.9987261146496815,
+          "group_macro_row_coverage": 0.9986394557823128,
+          "whole_group_coverage": 0.9333333333333333,
+          "mean_width": 0.28910760944123337,
+          "groups": 15
+        }
+      }
+    }
+  },
+  "sensitivity": {
+    "excluded": [
+      "MMA-13",
+      "MMA-16"
+    ],
+    "rows": 698,
+    "condition_groups": 13,
+    "models": {
+      "ridge": {
+        "mae": 0.029325490747137837,
+        "rmse": 0.03486829122642346,
+        "r2": 0.49262847513637864,
+        "group_macro_mae": 0.029909336589612333,
+        "group_macro_rmse": 0.035405195150988576
+      },
+      "catboost": {
+        "mae": 0.031140366784715715,
+        "rmse": 0.03991415455909265,
+        "r2": 0.3351577205058739,
+        "group_macro_mae": 0.03148583339193216,
+        "group_macro_rmse": 0.040034468383142535
+      },
+      "gp": {
+        "mae": 0.047336318663946456,
+        "rmse": 0.0578828563405867,
+        "r2": -0.3981850964854994,
+        "group_macro_mae": 0.048438756959095636,
+        "group_macro_rmse": 0.058588426265114034
+      },
+      "kinetic": {
+        "mae": 0.029655766755252947,
+        "rmse": 0.03643474481842854,
+        "r2": 0.44601727173225536,
+        "group_macro_mae": 0.03027762663802857,
+        "group_macro_rmse": 0.03701749764214499
+      },
+      "rate_ridge": {
+        "mae": 0.02971535221935402,
+        "rmse": 0.03653519872317999,
+        "r2": 0.4429582990852535,
+        "group_macro_mae": 0.03025365633870105,
+        "group_macro_rmse": 0.037144249660629194
+      },
+      "rate_gp": {
+        "mae": 0.030046473468949224,
+        "rmse": 0.0373313957246914,
+        "r2": 0.41841497540900663,
+        "group_macro_mae": 0.03060313246976181,
+        "group_macro_rmse": 0.037875695519330774
+      },
+      "kinetic_residual_gp": {
+        "mae": 0.03181735273096519,
+        "rmse": 0.03847372665126487,
+        "r2": 0.3822777130833347,
+        "group_macro_mae": 0.03238173190514264,
+        "group_macro_rmse": 0.03885203507441193
+      }
+    },
+    "shape": {
+      "ridge": {
+        "decreasing_steps": 0,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 12
+      },
+      "catboost": {
+        "decreasing_steps": 94,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 13
+      },
+      "gp": {
+        "decreasing_steps": 244,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 13
+      },
+      "kinetic": {
+        "decreasing_steps": 0,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 0
+      },
+      "rate_ridge": {
+        "decreasing_steps": 0,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 0
+      },
+      "rate_gp": {
+        "decreasing_steps": 0,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 0
+      },
+      "kinetic_residual_gp": {
+        "decreasing_steps": 20,
+        "grid_steps": 832,
+        "nonzero_at_t0_groups": 0
+      }
+    },
+    "warning_count": 0,
+    "intervals": {}
+  }
+}
