@@ -1,0 +1,181 @@
+{
+  "source_commit": "04141db455fb7746a0b6a93ab71aae08150349dc",
+  "workflow_run": 46006836937,
+  "artifact_id": 15201847638,
+  "quality": {
+    "doi": "10.5281/zenodo.15230215",
+    "workbook_sha256": "9c40f72053e66a7a6c4bdd5d14a92e2af1eb9a89470dc1045824c6f6f8741060",
+    "table_sha256": "2faf4f1f4e0068156be7659e5f04edf9beb581f7aa616d21ab783b10a7d450c7",
+    "status": "provisional_numeric_qc_nominal_time",
+    "strict_explicit_subset": {
+      "counts": {
+        "sample_rows": 540,
+        "flag_explicit_positive": 1,
+        "selected_rows": 1,
+        "sec_flagged_timepoints": 2,
+        "flag_explicit_rejection": 50,
+        "not_selected": 539,
+        "flag_unmarked_provisional": 488,
+        "flag_ambiguous_flag": 1
+      },
+      "timepoint_rows": 1,
+      "experiments": 1,
+      "sha256": "8bcf1bcb0388c35c1aaf2792a28f729f2e53117767837b1c3e7c0b85e0c15d99"
+    },
+    "selection_basis_rows": {
+      "explicit_positive": 1,
+      "unmarked_provisional": 2005
+    },
+    "counts": {
+      "sample_rows": 540,
+      "flag_explicit_positive": 1,
+      "selected_rows": 489,
+      "sec_flagged_timepoints": 2449,
+      "flag_explicit_rejection": 50,
+      "not_selected": 51,
+      "flag_unmarked_provisional": 488,
+      "conversion_invalid_or_no_integral": 245,
+      "flag_ambiguous_flag": 1
+    },
+    "timepoint_rows": 2006,
+    "experiments": 442,
+    "condition_groups": 299,
+    "monomer_codes": [
+      "1",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "raft_agent_codes": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G"
+    ],
+    "solvent_codes": [
+      "DMF",
+      "DMSO",
+      "Tol"
+    ],
+    "targets": {
+      "conversion_fraction": {
+        "observed_rows": 1874,
+        "groups": 295
+      },
+      "mn_g_mol": {
+        "observed_rows": 330,
+        "groups": 126
+      },
+      "mw_g_mol": {
+        "observed_rows": 327,
+        "groups": 123
+      },
+      "dispersity": {
+        "observed_rows": 327,
+        "groups": 123
+      }
+    },
+    "limitations": "Explicit-positive and unmarked rows form provisional numeric-QC candidates; explicit rejection and ambiguous flags excluded. Duplicate IDs quarantined. Strict explicit subset preserved separately. Not a reproduction of the published 234 curated curves. Nominal sampling times, not corrected exact times. Source codes retained; no imputed labels, no pooling with Monash, no cross-source accuracy claim."
+  },
+  "benchmark": {
+    "conversion_fraction": {
+      "status": "completed",
+      "rows": 1874,
+      "groups": 295,
+      "models": {
+        "time_only": {
+          "mae": 0.16081366012555598,
+          "rmse": 0.20689313307350865,
+          "r2": 0.25260690362338667,
+          "group_macro_mae": 0.1662638767379032,
+          "group_macro_rmse": 0.21359547456664515
+        },
+        "time_recipe": {
+          "mae": 0.09866236408441632,
+          "rmse": 0.13607264020599275,
+          "r2": 0.6767053244418773,
+          "group_macro_mae": 0.10391661783815569,
+          "group_macro_rmse": 0.1406971818898326
+        }
+      }
+    },
+    "mn_g_mol": {
+      "status": "completed",
+      "rows": 330,
+      "groups": 126,
+      "models": {
+        "time_only": {
+          "mae": 5423.562323776713,
+          "rmse": 11948.204814213459,
+          "r2": -0.06712733497310053,
+          "group_macro_mae": 6656.7914598082625,
+          "group_macro_rmse": 16872.73460846135
+        },
+        "time_recipe": {
+          "mae": 3186.972631157389,
+          "rmse": 8248.87114644777,
+          "r2": 0.4913723485698023,
+          "group_macro_mae": 4066.5611350121676,
+          "group_macro_rmse": 11924.88625200484
+        }
+      }
+    },
+    "mw_g_mol": {
+      "status": "completed",
+      "rows": 327,
+      "groups": 123,
+      "models": {
+        "time_only": {
+          "mae": 7228.434506324648,
+          "rmse": 13105.515653213257,
+          "r2": -0.14057824991415013,
+          "group_macro_mae": 6752.748534086488,
+          "group_macro_rmse": 13467.682966063068
+        },
+        "time_recipe": {
+          "mae": 3918.295187226396,
+          "rmse": 7490.738466919979,
+          "r2": 0.6273800294066652,
+          "group_macro_mae": 3628.00921756197,
+          "group_macro_rmse": 7103.8991777595675
+        }
+      }
+    },
+    "dispersity": {
+      "status": "completed",
+      "rows": 327,
+      "groups": 123,
+      "models": {
+        "time_only": {
+          "mae": 0.18786128482446143,
+          "rmse": 0.2606050849093466,
+          "r2": -0.09001834161936406,
+          "group_macro_mae": 0.18287620864311144,
+          "group_macro_rmse": 0.24982747849003709
+        },
+        "time_recipe": {
+          "mae": 0.1031167948052226,
+          "rmse": 0.1444679070485302,
+          "r2": 0.6650262330003989,
+          "group_macro_mae": 0.10670792460807124,
+          "group_macro_rmse": 0.14679027609200135
+        }
+      }
+    }
+  }
+}
